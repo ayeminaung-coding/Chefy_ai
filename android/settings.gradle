@@ -1,0 +1,14 @@
+pluginManagement {
+    includeBuild("../node_modules/@react-native/gradle-plugin")
+}
+plugins {
+    id("com.facebook.react.settings")
+}
+
+reactSettings {
+    autolinkLibrariesFromCommand()
+}
+
+rootProject.name = 'Chefyai'
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
