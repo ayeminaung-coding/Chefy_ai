@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, Platform } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { COLORS } from '../../../core/theme';
 
 const RecipeCard = ({ recipe, onPress, onBookmark, isBookmarked, style }) => {
   const handleBookmarkPress = () => {
@@ -16,13 +17,12 @@ const RecipeCard = ({ recipe, onPress, onBookmark, isBookmarked, style }) => {
       onPress={() => onPress(recipe)}
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed, style]}
     >
-      <Image
-        accessibilityIgnoresInvertColors
-        source={{ uri: recipe.image }}
-        style={styles.image}
-      />
-
-      <View style={styles.content}>
+      <View style={styles.imageContainer}>
+        <Image
+          accessibilityIgnoresInvertColors
+          source={{ uri: recipe.image }}
+          style={styles.image}
+        />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={
@@ -41,37 +41,39 @@ const RecipeCard = ({ recipe, onPress, onBookmark, isBookmarked, style }) => {
           ]}
         >
           <Ionicons
-            color={isBookmarked ? '#16A34A' : '#6B7280'}
+            color={isBookmarked ? COLORS.primary : COLORS.white}
             name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-            size={20}
+            size={22}
           />
         </Pressable>
+      </View>
 
-        <Text numberOfLines={2} style={styles.title}>
+      <View style={styles.content}>
+        <Text numberOfLines={1} style={styles.title}>
           {recipe.title}
         </Text>
 
         <View style={styles.metaRow}>
           <View style={styles.metaItem}>
-            <Ionicons color="#6B7280" name="time-outline" size={14} />
-            <Text style={styles.metaText}>{`${recipe.readyInMinutes} min`}</Text>
+            <Ionicons color={COLORS.textSecondary} name="time-outline" size={14} />
+            <Text style={styles.metaText}>{`${recipe.readyInMinutes}m`}</Text>
           </View>
 
-          <Text style={styles.metaDivider}>|</Text>
+          <View style={styles.dot} />
 
           <View style={styles.metaItem}>
-            <Ionicons color="#6B7280" name="people-outline" size={14} />
-            <Text style={styles.metaText}>{`${recipe.servings} servings`}</Text>
+            <Ionicons color={COLORS.textSecondary} name="people-outline" size={14} />
+            <Text style={styles.metaText}>{`${recipe.servings} serving`}</Text>
           </View>
         </View>
 
-        {recipe.missedIngredientCount > 0 ? (
+        {recipe.missedIngredientCount > 0 && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
               {`Missing ${recipe.missedIngredientCount} ingredients`}
             </Text>
           </View>
-        ) : null}
+        )}
       </View>
     </Pressable>
   );
@@ -100,44 +102,52 @@ RecipeCard.defaultProps = {
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: 16,
-    width: 'auto',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    overflow: 'hidden',
-    flexDirection: 'row',
-    elevation: 2,
-    shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.text,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
   cardPressed: {
-    opacity: 0.94,
+    transform: [{ scale: 0.98 }],
+  },
+  imageContainer: {
+    width: '100%',
+    height: 180,
+    position: 'relative',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: 'hidden',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: '100%',
+    height: '100%',
     resizeMode: 'cover',
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
   },
   content: {
-    flex: 1,
-    padding: 12,
-    justifyContent: 'center',
+    padding: 16,
   },
   title: {
-    color: '#374151',
-    fontSize: 16,
+    color: COLORS.text,
+    fontSize: 18,
     fontWeight: '700',
-    lineHeight: 22,
-    paddingRight: 36,
+    marginBottom: 8,
   },
   metaRow: {
-    marginTop: 8,
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
   },
   metaItem: {
     flexDirection: 'row',
@@ -145,49 +155,51 @@ const styles = StyleSheet.create({
   },
   metaText: {
     marginLeft: 4,
-    fontSize: 14,
-    color: '#4B5563',
-    fontWeight: '500',
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
   },
-  metaDivider: {
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.disabled,
     marginHorizontal: 8,
-    color: '#9CA3AF',
-    fontSize: 14,
   },
   bookmarkButton: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 28,
-    height: 28,
+    top: 12,
+    right: 12,
+    width: 38,
+    height: 38,
+    backgroundColor: 'rgba(26, 26, 26, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 14,
+    borderRadius: 19,
   },
   bookmarkPressed: {
-    opacity: 0.72,
+    backgroundColor: 'rgba(26, 26, 26, 0.6)',
   },
   bookmarkDisabled: {
     opacity: 0.5,
   },
   bookmarkHitSlop: {
-    top: 8,
-    right: 8,
-    bottom: 8,
-    left: 8,
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10,
   },
   badge: {
-    marginTop: 8,
+    backgroundColor: COLORS.error + '15', // 15% opacity
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     alignSelf: 'flex-start',
-    backgroundColor: '#EF4444',
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
   },
   badgeText: {
-    color: '#FFFFFF',
+    color: COLORS.error,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
 

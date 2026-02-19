@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { ActivityIndicator, Pressable, StyleSheet, Text, Vibration } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, Vibration, Platform } from 'react-native';
 
 import { COLORS } from '../theme';
 
@@ -55,25 +55,40 @@ PrimaryButton.defaultProps = {
 const styles = StyleSheet.create({
   button: {
     width: '100%',
-    height: 56,
-    borderRadius: 12,
+    height: 58,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
   enabledButton: {
     backgroundColor: COLORS.primary,
   },
   disabledButton: {
     backgroundColor: COLORS.disabled,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   pressedButton: {
-    opacity: 0.8,
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
   },
   title: {
     color: COLORS.white,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     textAlign: 'center',
+    letterSpacing: 0.5,
   },
 });
 

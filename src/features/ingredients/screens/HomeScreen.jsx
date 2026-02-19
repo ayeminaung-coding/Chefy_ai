@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import {
 	SafeAreaView,
 	ScrollView,
@@ -6,6 +6,7 @@ import {
 	StyleSheet,
 	Text,
 	TextInput,
+	Platform,
 	View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -42,51 +43,44 @@ const HomeScreen = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			<StatusBar barStyle="light-content" />
+			<StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
 
-			{/* ── Purple header banner ── */}
-			<View style={styles.headerBanner}>
-				<SafeAreaView>
-					<View style={styles.headerInner}>
-						<View>
-							<Text style={styles.title}>{'What\'s in your\nfridge? 🧊'}</Text>
-							<Text style={styles.subtitle}>Pick 3–5 ingredients to find recipes</Text>
-						</View>
-						<View style={styles.counterBadge}>
-							<Text style={styles.counterBadgeText}>{selectedIngredients.length}/5</Text>
-						</View>
+			<SafeAreaView style={styles.safeArea}>
+				<View style={styles.header}>
+					<View>
+						<Text style={styles.greeting}>Hello Chef! 👋</Text>
+						<Text style={styles.title}>What's in your fridge?</Text>
 					</View>
-				</SafeAreaView>
-			</View>
+					<View style={styles.counterContainer}>
+						<Text style={styles.counterText}>
+							<Text style={styles.counterActive}>{selectedIngredients.length}</Text>
+							<Text style={styles.counterTotal}>/5</Text>
+						</Text>
+					</View>
+				</View>
+
+				<View style={styles.searchContainer}>
+					<Icon color={COLORS.textSecondary} name="search" size={20} />
+					<TextInput
+						placeholder="Search ingredients..."
+						placeholderTextColor={COLORS.textSecondary}
+						style={styles.searchInput}
+						value={searchQuery}
+						onChangeText={setSearchQuery}
+						autoCorrect={false}
+						autoCapitalize="none"
+					/>
+				</View>
+			</SafeAreaView>
 
 			<ScrollView
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}
 			>
 				<View style={styles.content}>
-					{/* ── Search bar ── */}
-					<View style={styles.searchContainer}>
-						<View style={styles.searchIconWrap}>
-							<Icon color={COLORS.primary} name="search" size={18} />
-						</View>
-						<TextInput
-							placeholder="Search ingredients..."
-							placeholderTextColor={COLORS.textSecondary}
-							style={styles.searchInput}
-							value={searchQuery}
-							onChangeText={setSearchQuery}
-							autoCorrect={false}
-							autoCapitalize="none"
-							returnKeyType="search"
-						/>
-					</View>
-
-					{/* ── Section label ── */}
-					<View style={styles.sectionRow}>
-						<Text style={styles.sectionLabel}>🥦 Ingredients</Text>
-						{selectedIngredients.length > 0 && (
-							<Text style={styles.sectionHint}>{`${selectedIngredients.length} selected`}</Text>
-						)}
+					<View style={styles.sectionHeader}>
+						<Text style={styles.sectionTitle}>Select Ingredients</Text>
+						<Text style={styles.sectionSubtitle}>Minimum 3 required</Text>
 					</View>
 
 					<IngredientSelector
@@ -97,15 +91,12 @@ const HomeScreen = ({ navigation }) => {
 				</View>
 			</ScrollView>
 
-			{/* ── Sticky bottom CTA ── */}
-			<View style={styles.bottomArea}>
-				<SafeAreaView>
-					<PrimaryButton
-						disabled={isFindRecipesDisabled}
-						onPress={handleFindRecipes}
-						title="Find Recipes"
-					/>
-				</SafeAreaView>
+			<View style={styles.bottomBar}>
+				<PrimaryButton
+					disabled={isFindRecipesDisabled}
+					onPress={handleFindRecipes}
+					title={isFindRecipesDisabled ? "Select More Ingredients" : "Find Delicious Recipes"}
+				/>
 			</View>
 		</View>
 	);
@@ -116,127 +107,114 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: COLORS.background,
 	},
-
-	/* ── Header banner ── */
-	headerBanner: {
-		backgroundColor: COLORS.primary,
-		paddingHorizontal: 24,
-		paddingBottom: 28,
-		borderBottomLeftRadius: 28,
-		borderBottomRightRadius: 28,
-		// subtle shadow so the card content below looks layered
-		shadowColor: COLORS.primary,
-		shadowOffset: { width: 0, height: 8 },
-		shadowOpacity: 0.28,
-		shadowRadius: 16,
-		elevation: 8,
+	safeArea: {
+		backgroundColor: COLORS.background,
 	},
-	headerInner: {
+	header: {
 		flexDirection: 'row',
-		alignItems: 'flex-end',
 		justifyContent: 'space-between',
-		marginTop: 12,
+		alignItems: 'center',
+		paddingHorizontal: 24,
+		paddingTop: 20,
+		paddingBottom: 16,
+	},
+	greeting: {
+		fontSize: 16,
+		fontWeight: '500',
+		color: COLORS.textSecondary,
+		marginBottom: 4,
 	},
 	title: {
-		fontSize: 26,
+		fontSize: 28,
 		fontWeight: '800',
-		color: COLORS.white,
-		lineHeight: 34,
+		color: COLORS.text,
+		letterSpacing: -0.5,
 	},
-	subtitle: {
-		marginTop: 6,
-		fontSize: 13,
-		color: 'rgba(255,255,255,0.72)',
-		letterSpacing: 0.2,
-	},
-	counterBadge: {
-		backgroundColor: 'rgba(255,255,255,0.18)',
-		borderRadius: 20,
-		paddingHorizontal: 14,
+	counterContainer: {
+		backgroundColor: COLORS.white,
+		paddingHorizontal: 12,
 		paddingVertical: 8,
+		borderRadius: 16,
 		borderWidth: 1,
-		borderColor: 'rgba(255,255,255,0.35)',
+		borderColor: COLORS.border,
+		...Platform.select({
+			ios: {
+				shadowColor: '#000',
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.05,
+				shadowRadius: 4,
+			},
+			android: {
+				elevation: 0,
+			},
+		}),
 	},
-	counterBadgeText: {
-		color: COLORS.white,
-		fontSize: 18,
+	counterText: {
+		fontSize: 16,
 		fontWeight: '700',
 	},
-
-	/* ── Scroll & content ── */
+	counterActive: {
+		color: COLORS.primary,
+	},
+	counterTotal: {
+		color: COLORS.textSecondary,
+	},
+	searchContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: COLORS.white,
+		marginHorizontal: 24,
+		paddingHorizontal: 16,
+		height: 54,
+		borderRadius: 16,
+		borderWidth: 1,
+		borderColor: COLORS.border,
+		marginTop: 8,
+		marginBottom: 8,
+	},
+	searchInput: {
+		flex: 1,
+		marginLeft: 12,
+		fontSize: 16,
+		color: COLORS.text,
+	},
 	scrollContent: {
 		paddingBottom: 120,
 	},
 	content: {
-		paddingHorizontal: 20,
-		paddingTop: 20,
+		paddingHorizontal: 24,
+		paddingTop: 16,
 	},
-
-	/* ── Search bar ── */
-	searchContainer: {
-		height: 52,
-		borderRadius: 14,
-		backgroundColor: COLORS.white,
-		paddingHorizontal: 6,
-		marginBottom: 20,
+	sectionHeader: {
 		flexDirection: 'row',
-		alignItems: 'center',
-		borderWidth: 1.5,
-		borderColor: COLORS.border,
-		shadowColor: COLORS.primary,
-		shadowOffset: { width: 0, height: 3 },
-		shadowOpacity: 0.08,
-		shadowRadius: 8,
-		elevation: 2,
-	},
-	searchIconWrap: {
-		width: 38,
-		height: 38,
-		borderRadius: 10,
-		backgroundColor: '#ededfb',
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginLeft: 2,
-	},
-	searchInput: {
-		flex: 1,
-		marginLeft: 10,
-		fontSize: 15,
-		color: COLORS.text,
-		paddingVertical: 0,
-	},
-
-	/* ── Section row ── */
-	sectionRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
 		justifyContent: 'space-between',
-		marginBottom: 12,
+		alignItems: 'baseline',
+		marginBottom: 20,
 	},
-	sectionLabel: {
-		fontSize: 16,
+	sectionTitle: {
+		fontSize: 20,
 		fontWeight: '700',
 		color: COLORS.text,
 	},
-	sectionHint: {
+	sectionSubtitle: {
 		fontSize: 13,
-		color: COLORS.accent,
-		fontWeight: '600',
+		color: COLORS.textSecondary,
+		fontWeight: '500',
 	},
-
-	/* ── Bottom CTA ── */
-	bottomArea: {
+	bottomBar: {
 		position: 'absolute',
+		bottom: 0,
 		left: 0,
 		right: 0,
-		bottom: 0,
-		paddingHorizontal: 20,
-		paddingTop: 10,
-		paddingBottom: 6,
-		backgroundColor: 'rgba(247,247,252,0.96)',
+		backgroundColor: COLORS.background,
+		paddingHorizontal: 24,
+		paddingTop: 16,
+		paddingBottom: 32,
 		borderTopWidth: 1,
 		borderTopColor: COLORS.border,
 	},
 });
 
 export default HomeScreen;
+
+

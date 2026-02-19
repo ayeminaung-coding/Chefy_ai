@@ -8,7 +8,7 @@ import {
     View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import { COLORS } from '../../../core/theme';
 import RecipeCard from './RecipeCard';
 
 const RecipeList = ({
@@ -23,7 +23,7 @@ const RecipeList = ({
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-    }, 700);
+    }, 1000);
   }, []);
 
   const renderItem = useCallback(
@@ -37,12 +37,13 @@ const RecipeList = ({
     [onRecipePress],
   );
 
-  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
-
   const renderEmpty = useCallback(
     () => (
       <View style={styles.emptyStateContainer}>
-        <Ionicons color="#9CA3AF" name="restaurant-outline" size={28} />
+        <View style={styles.emptyIconContainer}>
+          <Ionicons color={COLORS.primary} name="restaurant-outline" size={40} />
+        </View>
+        <Text style={styles.emptyStateTitle}>No Recipes Found</Text>
         <Text style={styles.emptyStateText}>{emptyMessage}</Text>
       </View>
     ),
@@ -57,12 +58,16 @@ const RecipeList = ({
           recipes.length === 0 && styles.emptyContentContainer,
         ]}
         data={recipes}
-        ItemSeparatorComponent={renderSeparator}
         keyExtractor={item => String(item.id)}
         ListEmptyComponent={renderEmpty}
         ListHeaderComponent={ListHeaderComponent || null}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={handleRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
         }
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
@@ -82,41 +87,53 @@ RecipeList.propTypes = {
 };
 
 RecipeList.defaultProps = {
-  emptyMessage: 'No recipes found',
+  emptyMessage: "Try selecting different ingredients to find the perfect recipe.",
   ListHeaderComponent: null,
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
   },
   contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 100,
   },
   emptyContentContainer: {
     flexGrow: 1,
     justifyContent: 'center',
   },
-  separator: {
-    height: 16,
-  },
   cardOverride: {
-    marginHorizontal: 0,
+    marginBottom: 20,
   },
   emptyStateContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 40,
+  },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: COLORS.primary + '10',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 8,
   },
   emptyStateText: {
-    marginTop: 8,
     textAlign: 'center',
-    color: '#6B7280',
-    fontSize: 16,
-    fontWeight: '500',
+    color: COLORS.textSecondary,
+    fontSize: 15,
+    lineHeight: 22,
   },
 });
 
 export default RecipeList;
+

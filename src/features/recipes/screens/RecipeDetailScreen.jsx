@@ -5,6 +5,7 @@ import {
 	Pressable,
 	SafeAreaView,
 	ScrollView,
+	StatusBar,
 	StyleSheet,
 	Text,
 	View,
@@ -30,14 +31,13 @@ const RecipeDetailScreen = ({ navigation, route }) => {
 	const animateBookmark = () => {
 		Animated.sequence([
 			Animated.timing(bookmarkScale, {
-				toValue: 1.15,
-				duration: 120,
+				toValue: 1.2,
+				duration: 150,
 				useNativeDriver: true,
 			}),
 			Animated.spring(bookmarkScale, {
 				toValue: 1,
-				speed: 16,
-				bounciness: 8,
+				friction: 4,
 				useNativeDriver: true,
 			}),
 		]).start();
@@ -53,7 +53,7 @@ const RecipeDetailScreen = ({ navigation, route }) => {
 			<SafeAreaView style={styles.notFoundContainer}>
 				<Text style={styles.notFoundTitle}>Recipe not found</Text>
 				<Text style={styles.notFoundText}>
-					We couldn&apos;t load that recipe. Please go back and try again.
+					We couldn't load that recipe. Please go back and try again.
 				</Text>
 				<PrimaryButton onPress={() => navigation.goBack()} title="Go Back" />
 			</SafeAreaView>
@@ -62,33 +62,29 @@ const RecipeDetailScreen = ({ navigation, route }) => {
 
 	return (
 		<View style={styles.screen}>
+			<StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 			<ScrollView
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}
 			>
 				<View style={styles.heroContainer}>
 					<Image source={{ uri: recipe.image }} style={styles.heroImage} />
-
-					<View pointerEvents="none" style={styles.gradientOverlay}>
-						<View style={styles.gradientLayerOne} />
-						<View style={styles.gradientLayerTwo} />
-						<View style={styles.gradientLayerThree} />
-					</View>
-
+					<View style={styles.overlay} />
+					
 					<SafeAreaView style={styles.heroActions}>
 						<Pressable
 							onPress={() => navigation.goBack()}
 							style={styles.iconButton}
 						>
-							<Ionicons color={COLORS.text} name="arrow-back" size={20} />
+							<Ionicons color={COLORS.text} name="chevron-back" size={24} />
 						</Pressable>
 
 						<Animated.View style={{ transform: [{ scale: bookmarkScale }] }}>
 							<Pressable onPress={handleBookmarkToggle} style={styles.iconButton}>
 								<Ionicons
-									color={isBookmarked ? COLORS.accent : COLORS.text}
+									color={isBookmarked ? COLORS.primary : COLORS.text}
 									name={isBookmarked ? 'heart' : 'heart-outline'}
-									size={20}
+									size={24}
 								/>
 							</Pressable>
 						</Animated.View>
@@ -98,60 +94,59 @@ const RecipeDetailScreen = ({ navigation, route }) => {
 				<View style={styles.contentSection}>
 					<Text style={styles.recipeTitle}>{recipe.title}</Text>
 
-					<View style={styles.infoCard}>
-						<View style={styles.infoItem}>
-							<Ionicons color={COLORS.secondary} name="time-outline" size={18} />
-							<Text style={styles.infoText}>{`${recipe.readyInMinutes} min`}</Text>
+					<View style={styles.statsContainer}>
+						<View style={styles.statItem}>
+							<View style={[styles.statIcon, { backgroundColor: COLORS.primary + '10' }]}>
+								<Ionicons color={COLORS.primary} name="time-outline" size={20} />
+							</View>
+							<Text style={styles.statValue}>{recipe.readyInMinutes}m</Text>
+							<Text style={styles.statLabel}>Time</Text>
 						</View>
-
-						<Text style={styles.infoDivider}>|</Text>
-
-						<View style={styles.infoItem}>
-							<Ionicons color={COLORS.secondary} name="people-outline" size={18} />
-							<Text style={styles.infoText}>{`${recipe.servings} servings`}</Text>
+						<View style={styles.statItem}>
+							<View style={[styles.statIcon, { backgroundColor: COLORS.secondary + '20' }]}>
+								<Ionicons color={COLORS.warning} name="people-outline" size={20} />
+							</View>
+							<Text style={styles.statValue}>{recipe.servings}</Text>
+							<Text style={styles.statLabel}>Servings</Text>
+						</View>
+						<View style={styles.statItem}>
+							<View style={[styles.statIcon, { backgroundColor: COLORS.accent + '15' }]}>
+								<Ionicons color={COLORS.accent} name="flame-outline" size={20} />
+							</View>
+							<Text style={styles.statValue}>Easy</Text>
+							<Text style={styles.statLabel}>Level</Text>
 						</View>
 					</View>
 
 					<Text style={styles.sectionTitle}>Ingredients</Text>
-					<View style={styles.ingredientsCard}>
+					<View style={styles.listCard}>
 						{recipe.ingredients.map((ingredient, index) => (
-							<View
-								key={`${ingredient.name}-${index}`}
-								style={[
-									styles.ingredientRow,
-									index < recipe.ingredients.length - 1 && styles.ingredientSpacing,
-								]}
-							>
-								<Text style={styles.bullet}>•</Text>
-								<Text style={styles.ingredientText}>{`${ingredient.amount}${ingredient.unit} ${ingredient.name}`}</Text>
+							<View key={index} style={[styles.listItem, index === recipe.ingredients.length - 1 && styles.noBorder]}>
+								<View style={styles.ingredientDot} />
+								<Text style={styles.ingredientText}>
+									<Text style={styles.ingredientAmount}>{ingredient.amount}{ingredient.unit}</Text>
+									{' '}{ingredient.name}
+								</Text>
 							</View>
 						))}
 					</View>
 
 					<Text style={styles.sectionTitle}>Instructions</Text>
-					{recipe.instructions.map((step, index) => (
-						<View
-							key={`step-${index}`}
-							style={[styles.instructionCard, index > 0 && styles.instructionSpacing]}
-						>
-							<View style={styles.stepBadge}>
-								<Text style={styles.stepNumber}>{index + 1}</Text>
+					<View style={styles.listCard}>
+						{recipe.instructions.map((step, index) => (
+							<View key={index} style={[styles.listItem, styles.alignStart, index === recipe.instructions.length - 1 && styles.noBorder]}>
+								<View style={styles.stepBadge}>
+									<Text style={styles.stepNumber}>{index + 1}</Text>
+								</View>
+								<Text style={styles.instructionText}>{step}</Text>
 							</View>
-							<Text style={styles.stepText}>{step}</Text>
-						</View>
-					))}
+						))}
+					</View>
 				</View>
 			</ScrollView>
 
-			<View style={styles.bottomBackdrop}>
-				<SafeAreaView style={styles.bottomSafeArea}>
-					<View style={styles.buttonWrapper}>
-						<PrimaryButton title="Start Cooking" onPress={() => {}} />
-						<View pointerEvents="none" style={styles.playIconWrapper}>
-							<Ionicons color={COLORS.white} name="play" size={16} />
-						</View>
-					</View>
-				</SafeAreaView>
+			<View style={styles.footer}>
+				<PrimaryButton title="Start Cooking" onPress={() => {}} />
 			</View>
 		</View>
 	);
@@ -166,135 +161,136 @@ const styles = StyleSheet.create({
 		paddingBottom: 120,
 	},
 	heroContainer: {
+		height: 320,
 		position: 'relative',
-		width: '100%',
-		height: 300,
-		overflow: 'hidden',
 	},
 	heroImage: {
 		width: '100%',
 		height: '100%',
 	},
-	gradientOverlay: {
-		position: 'absolute',
-		left: 0,
-		right: 0,
-		bottom: 0,
-		height: 140,
-		justifyContent: 'flex-end',
-	},
-	gradientLayerOne: {
-		height: 42,
-		backgroundColor: 'rgba(6, 6, 10, 0.2)',
-	},
-	gradientLayerTwo: {
-		height: 42,
-		backgroundColor: 'rgba(6, 6, 10, 0.4)',
-	},
-	gradientLayerThree: {
-		height: 56,
-		backgroundColor: COLORS.text,
+	overlay: {
+		...StyleSheet.absoluteFillObject,
+		backgroundColor: 'rgba(0,0,0,0.1)',
 	},
 	heroActions: {
 		position: 'absolute',
 		top: 0,
 		left: 0,
 		right: 0,
-		paddingHorizontal: 16,
-		paddingTop: 12,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
+		paddingHorizontal: 20,
+		paddingTop: 10,
 	},
 	iconButton: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
-		backgroundColor: 'rgba(255, 255, 255, 0.9)',
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: COLORS.white,
 		alignItems: 'center',
 		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
 	},
 	contentSection: {
-		marginTop: -24,
-		padding: 20,
-		borderTopLeftRadius: 24,
-		borderTopRightRadius: 24,
 		backgroundColor: COLORS.background,
+		marginTop: -30,
+		borderTopLeftRadius: 32,
+		borderTopRightRadius: 32,
+		paddingHorizontal: 24,
+		paddingTop: 32,
 	},
 	recipeTitle: {
-		fontSize: 24,
-		fontWeight: '700',
+		fontSize: 26,
+		fontWeight: '800',
 		color: COLORS.text,
-		marginBottom: 14,
+		lineHeight: 32,
+		marginBottom: 24,
 	},
-	infoCard: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		padding: 12,
+	statsContainer: {
 		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginBottom: 32,
+	},
+	statItem: {
+		flex: 1,
 		alignItems: 'center',
-		marginBottom: 20,
-	},
-	infoItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	infoDivider: {
-		marginHorizontal: 12,
-		color: '#d0d0e5',
-		fontSize: 16,
-	},
-	infoText: {
-		marginLeft: 6,
-		fontSize: 14,
-		color: COLORS.text,
-	},
-	sectionTitle: {
-		fontSize: 18,
-		fontWeight: '700',
-		color: COLORS.text,
-		marginBottom: 12,
-	},
-	ingredientsCard: {
 		backgroundColor: COLORS.white,
-		borderRadius: 12,
+		borderRadius: 20,
+		paddingVertical: 16,
+		marginHorizontal: 4,
 		borderWidth: 1,
-		borderColor: COLORS.secondary,
-		padding: 16,
-		marginBottom: 20,
+		borderColor: COLORS.border,
 	},
-	ingredientRow: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-	},
-	ingredientSpacing: {
+	statIcon: {
+		width: 36,
+		height: 36,
+		borderRadius: 12,
+		alignItems: 'center',
+		justifyContent: 'center',
 		marginBottom: 8,
 	},
-	bullet: {
-		color: COLORS.accent,
-		fontSize: 20,
-		lineHeight: 24,
-		marginRight: 8,
-	},
-	ingredientText: {
-		flex: 1,
-		fontSize: 16,
+	statValue: {
+		fontSize: 15,
+		fontWeight: '700',
 		color: COLORS.text,
-		lineHeight: 24,
 	},
-	instructionCard: {
+	statLabel: {
+		fontSize: 12,
+		color: COLORS.textSecondary,
+		fontWeight: '600',
+		marginTop: 2,
+	},
+	sectionTitle: {
+		fontSize: 20,
+		fontWeight: '700',
+		color: COLORS.text,
+		marginBottom: 16,
+	},
+	listCard: {
 		backgroundColor: COLORS.white,
-		borderRadius: 12,
+		borderRadius: 24,
 		padding: 16,
+		borderWidth: 1,
+		borderColor: COLORS.border,
+		marginBottom: 24,
+	},
+	listItem: {
 		flexDirection: 'row',
+		alignItems: 'center',
+		paddingVertical: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: COLORS.border,
+	},
+	alignStart: {
 		alignItems: 'flex-start',
 	},
-	instructionSpacing: {
-		marginTop: 12,
+	noBorder: {
+		borderBottomWidth: 0,
+	},
+	ingredientDot: {
+		width: 6,
+		height: 6,
+		borderRadius: 3,
+		backgroundColor: COLORS.primary,
+		marginRight: 12,
+	},
+	ingredientText: {
+		fontSize: 15,
+		color: COLORS.text,
+		flex: 1,
+	},
+	ingredientAmount: {
+		fontWeight: '700',
+		color: COLORS.primary,
 	},
 	stepBadge: {
-		width: 28,
-		height: 28,
-		borderRadius: 14,
+		width: 26,
+		height: 26,
+		borderRadius: 8,
 		backgroundColor: COLORS.primary,
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -304,56 +300,42 @@ const styles = StyleSheet.create({
 	stepNumber: {
 		color: COLORS.white,
 		fontWeight: '700',
-		fontSize: 14,
+		fontSize: 13,
 	},
-	stepText: {
+	instructionText: {
 		flex: 1,
-		fontSize: 16,
+		fontSize: 15,
 		color: COLORS.text,
-		lineHeight: 24,
+		lineHeight: 22,
 	},
-	bottomBackdrop: {
+	footer: {
 		position: 'absolute',
+		bottom: 0,
 		left: 0,
 		right: 0,
-		bottom: 0,
-		backgroundColor: 'rgba(247, 247, 252, 0.92)',
+		backgroundColor: COLORS.white,
+		paddingHorizontal: 24,
+		paddingTop: 16,
+		paddingBottom: 32,
 		borderTopWidth: 1,
-		borderTopColor: 'rgba(141, 141, 236, 0.18)',
-	},
-	bottomSafeArea: {
-		paddingHorizontal: 16,
-		paddingTop: 10,
-		paddingBottom: 10,
-	},
-	buttonWrapper: {
-		position: 'relative',
-	},
-	playIconWrapper: {
-		position: 'absolute',
-		left: 16,
-		top: 0,
-		bottom: 0,
-		justifyContent: 'center',
-		alignItems: 'center',
+		borderTopColor: COLORS.border,
 	},
 	notFoundContainer: {
 		flex: 1,
 		padding: 24,
 		justifyContent: 'center',
-		backgroundColor: COLORS.background,
+		alignItems: 'center',
 	},
 	notFoundTitle: {
 		fontSize: 24,
 		fontWeight: '700',
 		color: COLORS.text,
-		marginBottom: 8,
 	},
 	notFoundText: {
 		fontSize: 16,
 		color: COLORS.textSecondary,
-		marginBottom: 20,
-		lineHeight: 24,
+		textAlign: 'center',
+		marginVertical: 16,
 	},
 });
 

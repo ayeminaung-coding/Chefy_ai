@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Platform } from 'react-native';
 
 import { COLORS } from '../../../core/theme';
 
@@ -47,58 +47,58 @@ IngredientChip.defaultProps = {
 
 const styles = StyleSheet.create({
   touchTargetWrapper: {
-    minHeight: 44,
-    minWidth: 44,
-    justifyContent: 'center',
-    alignSelf: 'flex-start',
+    margin: 4,
   },
   chip: {
-    minHeight: 44,
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 14,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
+    borderWidth: 1,
   },
   unselectedChip: {
-    backgroundColor: '#ededfb',
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.white,
+    borderColor: COLORS.border,
   },
   selectedChip: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
   pressedChip: {
-    opacity: 0.78,
-    transform: [{ scale: 0.97 }],
+    opacity: 0.85,
+    transform: [{ scale: 0.96 }],
   },
   disabledChip: {
-    opacity: 0.38,
+    opacity: 0.3,
   },
   label: {
     fontSize: 14,
-    lineHeight: 20,
-    letterSpacing: 0.1,
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
   unselectedLabel: {
-    color: COLORS.primary,
-    fontWeight: '600',
+    color: COLORS.text,
   },
   selectedLabel: {
     color: COLORS.white,
-    fontWeight: '700',
   },
   hitSlopSize: {
-    top: 2,
-    right: 2,
-    bottom: 2,
-    left: 2,
+    top: 4,
+    right: 4,
+    bottom: 4,
+    left: 4,
   },
 });
 

@@ -18,12 +18,12 @@ const AppNavigator = () => {
       <Stack.Screen
         name="RecipeResults"
         component={RecipeResultsScreen}
-        options={{ title: "Recipe Results" }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="RecipeDetail"
         component={RecipeDetailScreen}
-        options={{ title: "Recipe Detail" }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

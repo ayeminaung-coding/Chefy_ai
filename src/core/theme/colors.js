@@ -1,16 +1,18 @@
 export const COLORS = {
-  text: '#06060a',
-  background: '#f7f7fc',
-  primary: '#4444ca',
-  secondary: '#8d8dec',
-  accent: '#4242f2',
-  white: '#ffffff',
-  textSecondary: '#6b7280',
-  success: '#16A34A',
-  border: '#e5e7eb',
-  error: '#ef4444',
-  warning: '#f59e0b',
-  disabled: '#d1d5db',
+  text: '#1A1A1A',
+  background: '#F8F9FA',
+  primary: '#FF6B6B', // Modern Coral/Red for food
+  secondary: '#FFD93D', // Warm Yellow
+  accent: '#4D96FF', // Soft Blue
+  white: '#FFFFFF',
+  textSecondary: '#6C757D',
+  success: '#2ECC71',
+  border: '#E9ECEF',
+  error: '#FF4757',
+  warning: '#FFA502',
+  disabled: '#CED4DA',
+  card: '#FFFFFF',
+  overlay: 'rgba(0,0,0,0.4)',
 };
 
 export default COLORS;

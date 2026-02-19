@@ -130,20 +130,23 @@ const IngredientSelector = ({
 
   return (
     <View style={styles.container}>
-      <FlatList
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.listContent}
-        data={ingredientList}
-        keyExtractor={item => item}
-        numColumns={2}
-        renderItem={renderIngredient}
-        scrollEnabled={false}
-        showsVerticalScrollIndicator={false}
-      />
-
-      <Text style={styles.counterText}>
-        {`${selectedIngredients.length} / ${maxSelection} ingredients selected`}
-      </Text>
+      <View style={styles.grid}>
+        {ingredientList.map((item) => {
+          const isSelected = selectedIngredients.includes(item);
+          const isDisabled = !isSelected && selectedIngredients.length >= maxSelection;
+          
+          return (
+            <View key={item} style={styles.itemContainer}>
+              <IngredientChip
+                disabled={isDisabled}
+                isSelected={isSelected}
+                label={item}
+                onPress={() => toggleIngredient(item)}
+              />
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 };
@@ -164,22 +167,14 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
-  listContent: {
-    paddingBottom: 8,
-  },
-  row: {
-    justifyContent: 'space-between',
-    marginBottom: 8,
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -4,
   },
   itemContainer: {
-    width: '48%',
-  },
-  counterText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-    textAlign: 'center',
+    width: '50%',
+    padding: 4,
   },
 });
 

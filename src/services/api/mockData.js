@@ -1,4 +1,4 @@
-export const MOCK_RECIPES = [
+﻿export const MOCK_RECIPES = [
   {
     id: 101,
     title: 'Garlic Soy Chicken Rice Bowl',
@@ -102,7 +102,7 @@ export const MOCK_RECIPES = [
     ],
     instructions: [
       'Slice potato and carrot into thin strips.',
-      'Heat oil in a pan and sauté onion until fragrant.',
+      'Heat oil in a pan and Sauté onion until fragrant.',
       'Add potato and carrot, stir-frying until tender.',
       'Add soy sauce and a splash of water, then cook 2 more minutes.',
       'Serve hot with rice or bread.',
@@ -207,3 +207,4 @@ export const MOCK_USER = {
   },
   savedRecipeIds: [101, 103],
 };
+

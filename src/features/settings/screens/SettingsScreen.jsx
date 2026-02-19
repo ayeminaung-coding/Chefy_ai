@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import {
 	Alert,
 	Image,
@@ -9,6 +9,7 @@ import {
 	StyleSheet,
 	Switch,
 	Text,
+	Platform,
 	View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -34,7 +35,9 @@ const InteractiveRow = ({
 		]}
 	>
 		<View style={styles.rowLeft}>
-			<Text style={styles.rowIcon}>{icon}</Text>
+			<View style={[styles.iconContainer, { backgroundColor: COLORS.primary + '10' }]}>
+				<Text style={styles.rowIconText}>{icon}</Text>
+			</View>
 			<Text style={styles.rowLabel}>{label}</Text>
 		</View>
 		{rightComponent}
@@ -57,29 +60,6 @@ const SettingsScreen = ({ navigation }) => {
 		}));
 	};
 
-	const canNavigateTo = routeName => {
-		let currentNavigation = navigation;
-
-		while (currentNavigation) {
-			const state = currentNavigation.getState?.();
-			if (state?.routeNames?.includes(routeName)) {
-				return true;
-			}
-			currentNavigation = currentNavigation.getParent?.();
-		}
-
-		return false;
-	};
-
-	const handleNavigateOrNotify = (routeName, title) => {
-		if (canNavigateTo(routeName)) {
-			navigation.navigate(routeName);
-			return;
-		}
-
-		Alert.alert('Coming soon', `${title} screen is not available yet.`);
-	};
-
 	const handleLogout = () => {
 		Alert.alert('Log out', 'Are you sure you want to log out?', [
 			{ text: 'Cancel', style: 'cancel' },
@@ -92,38 +72,32 @@ const SettingsScreen = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={styles.safeArea}>
-			<StatusBar barStyle="light-content" />
+		<View style={styles.container}>
+			<StatusBar barStyle="dark-content" />
+			<SafeAreaView style={styles.header}>
+				<View style={styles.headerContent}>
+					<Text style={styles.headerTitle}>Settings</Text>
+				</View>
+			</SafeAreaView>
 
 			<ScrollView
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}
 			>
-				<View style={styles.header}>
-					<View style={styles.headerGradient}>
-						<View style={[styles.gradientBand, styles.gradientTop]} />
-						<View style={[styles.gradientBand, styles.gradientMiddle]} />
-						<View style={[styles.gradientBand, styles.gradientBottom]} />
+				<View style={styles.profileSection}>
+					<View style={styles.avatarContainer}>
+						<Image source={{ uri: MOCK_USER.avatarUrl }} style={styles.avatar} />
+						<View style={styles.editBadge}>
+							<Ionicons name="camera" size={14} color={COLORS.white} />
+						</View>
 					</View>
-
-					<Text style={styles.headerTitle}>Settings</Text>
-				</View>
-
-				<View style={styles.profileCard}>
-					<Image source={{ uri: MOCK_USER.avatarUrl }} style={styles.avatar} />
 					<Text style={styles.username}>{MOCK_USER.username}</Text>
-					<Text style={styles.userId}>{MOCK_USER.userId}</Text>
-					<Pressable
-						onPress={() => Alert.alert('Coming soon', 'Edit Profile is not available yet.')}
-						style={({ pressed }) => [styles.editProfileButton, pressed && styles.editPressed]}
-					>
-						<Text style={styles.editProfileText}>Edit Profile</Text>
-					</Pressable>
+					<Text style={styles.email}>yasuo@chefmail.com</Text>
 				</View>
 
-				<View style={styles.preferencesContainer}>
-					<View style={styles.sectionCard}>
-						<Text style={styles.sectionHeader}>Dietary Preferences</Text>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>Preferences</Text>
+					<View style={styles.card}>
 						<InteractiveRow
 							icon="🥗"
 							label="Vegetarian"
@@ -139,8 +113,8 @@ const SettingsScreen = ({ navigation }) => {
 						/>
 						<InteractiveRow
 							icon="🌙"
-							isLast
 							label="Halal"
+							isLast
 							onPress={() => togglePreference('isHalal')}
 							rightComponent={
 								<Switch
@@ -152,9 +126,11 @@ const SettingsScreen = ({ navigation }) => {
 							}
 						/>
 					</View>
+				</View>
 
-					<View style={styles.sectionCard}>
-						<Text style={styles.sectionHeader}>App Settings</Text>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>App Settings</Text>
+					<View style={styles.card}>
 						<InteractiveRow
 							icon="🌙"
 							label="Dark Mode"
@@ -169,199 +145,222 @@ const SettingsScreen = ({ navigation }) => {
 							}
 						/>
 						<InteractiveRow
+							icon="🔔"
+							label="Notifications"
+							rightComponent={<Ionicons name="chevron-forward" size={18} color={COLORS.textSecondary} />}
+						/>
+						<InteractiveRow
 							icon="🌐"
 							label="Language"
-							onPress={() => handleNavigateOrNotify('Language', 'Language')}
-							rightComponent={<Ionicons color={COLORS.textSecondary} name="chevron-forward" size={18} />}
-						/>
-						<InteractiveRow
-							icon="🔔"
 							isLast
-							label="Notifications"
-							onPress={() => handleNavigateOrNotify('Notifications', 'Notifications')}
-							rightComponent={<Ionicons color={COLORS.textSecondary} name="chevron-forward" size={18} />}
+							rightComponent={<Text style={styles.rowValue}>English</Text>}
 						/>
 					</View>
+				</View>
 
-					<View style={styles.sectionCard}>
-						<Text style={styles.sectionHeader}>About</Text>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>Support</Text>
+					<View style={styles.card}>
 						<InteractiveRow
-							disabled
 							icon="ℹ️"
-							label="App Version"
-							rightComponent={<Text style={styles.versionText}>{appVersion}</Text>}
-						/>
-						<InteractiveRow
-							icon="🔒"
-							label="Privacy Policy"
-							onPress={() => handleNavigateOrNotify('PrivacyPolicy', 'Privacy Policy')}
-							rightComponent={<Ionicons color={COLORS.textSecondary} name="chevron-forward" size={18} />}
+							label="About Chefyai"
+							rightComponent={<Text style={styles.rowValue}>v{appVersion}</Text>}
 						/>
 						<InteractiveRow
 							icon="📄"
-							isLast
 							label="Terms of Service"
-							onPress={() => handleNavigateOrNotify('TermsOfService', 'Terms of Service')}
-							rightComponent={<Ionicons color={COLORS.textSecondary} name="chevron-forward" size={18} />}
+							isLast
+							rightComponent={<Ionicons name="chevron-forward" size={18} color={COLORS.textSecondary} />}
 						/>
 					</View>
 				</View>
 
 				<Pressable
 					onPress={handleLogout}
-					style={({ pressed }) => [styles.logoutButton, pressed && styles.rowPressed]}
+					style={({ pressed }) => [
+						styles.logoutButton,
+						pressed && styles.logoutPressed
+					]}
 				>
+					<Ionicons name="log-out-outline" size={20} color={COLORS.error} />
 					<Text style={styles.logoutText}>Logout</Text>
 				</Pressable>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 };
 
 const styles = StyleSheet.create({
-	safeArea: {
+	container: {
 		flex: 1,
 		backgroundColor: COLORS.background,
 	},
-	scrollContent: {
-		paddingBottom: 28,
-	},
 	header: {
+		backgroundColor: COLORS.white,
+		borderBottomWidth: 1,
+		borderBottomColor: COLORS.border,
+	},
+	headerContent: {
 		paddingHorizontal: 24,
-		paddingVertical: 32,
-		position: 'relative',
-		overflow: 'hidden',
-	},
-	headerGradient: {
-		...StyleSheet.absoluteFillObject,
-		flexDirection: 'column',
-	},
-	gradientBand: {
-		flex: 1,
-	},
-	gradientTop: {
-		backgroundColor: COLORS.primary,
-	},
-	gradientMiddle: {
-		backgroundColor: '#4343de',
-	},
-	gradientBottom: {
-		backgroundColor: COLORS.accent,
+		paddingVertical: 16,
 	},
 	headerTitle: {
 		fontSize: 24,
-		fontWeight: '700',
-		color: COLORS.white,
+		fontWeight: '800',
+		color: COLORS.text,
 	},
-	profileCard: {
-		backgroundColor: COLORS.white,
-		borderRadius: 16,
-		padding: 20,
-		marginHorizontal: 16,
-		marginTop: -40,
+	scrollContent: {
+		paddingBottom: 40,
+	},
+	profileSection: {
 		alignItems: 'center',
-		shadowColor: COLORS.primary,
-		shadowOffset: { width: 0, height: 8 },
-		shadowOpacity: 0.12,
-		shadowRadius: 18,
-		elevation: 5,
+		paddingVertical: 32,
+		backgroundColor: COLORS.white,
+		borderBottomWidth: 1,
+		borderBottomColor: COLORS.border,
+		marginBottom: 24,
+	},
+	avatarContainer: {
+		position: 'relative',
+		marginBottom: 16,
 	},
 	avatar: {
-		width: 80,
-		height: 80,
-		borderRadius: 40,
+		width: 100,
+		height: 100,
+		borderRadius: 50,
+		borderWidth: 4,
+		borderColor: COLORS.background,
+	},
+	editBadge: {
+		position: 'absolute',
+		bottom: 0,
+		right: 0,
+		backgroundColor: COLORS.primary,
+		width: 30,
+		height: 30,
+		borderRadius: 15,
+		alignItems: 'center',
+		justifyContent: 'center',
 		borderWidth: 3,
-		borderColor: COLORS.primary,
+		borderColor: COLORS.white,
 	},
 	username: {
-		marginTop: 12,
-		fontSize: 18,
+		fontSize: 22,
 		fontWeight: '700',
 		color: COLORS.text,
+		marginBottom: 4,
 	},
-	userId: {
-		marginTop: 4,
+	email: {
 		fontSize: 14,
 		color: COLORS.textSecondary,
+		fontWeight: '500',
 	},
-	editProfileButton: {
-		marginTop: 10,
-		paddingVertical: 6,
-		paddingHorizontal: 10,
-		borderRadius: 8,
+	section: {
+		paddingHorizontal: 24,
+		marginBottom: 24,
 	},
-	editProfileText: {
-		color: COLORS.accent,
-		fontSize: 15,
-		fontWeight: '600',
-	},
-	editPressed: {
-		opacity: 0.75,
-	},
-	preferencesContainer: {
-		padding: 16,
-	},
-	sectionCard: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		marginBottom: 16,
-		overflow: 'hidden',
-	},
-	sectionHeader: {
-		fontSize: 16,
+	sectionTitle: {
+		fontSize: 14,
 		fontWeight: '700',
-		color: COLORS.text,
-		padding: 16,
-		paddingBottom: 10,
+		color: COLORS.textSecondary,
+		textTransform: 'uppercase',
+		letterSpacing: 1.2,
+		marginBottom: 12,
+		marginLeft: 4,
+	},
+	card: {
+		backgroundColor: COLORS.white,
+		borderRadius: 24,
+		overflow: 'hidden',
+		borderWidth: 1,
+		borderColor: COLORS.border,
+		...Platform.select({
+			ios: {
+				shadowColor: '#000',
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.03,
+				shadowRadius: 8,
+			},
+			android: {
+				elevation: 0,
+			},
+		}),
 	},
 	row: {
-		height: 60,
-		paddingHorizontal: 16,
+		height: 64,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		backgroundColor: COLORS.white,
+		paddingHorizontal: 16,
 	},
 	rowBorder: {
 		borderBottomWidth: 1,
-		borderBottomColor: COLORS.background,
+		borderBottomColor: COLORS.border,
+	},
+	rowPressed: {
+		backgroundColor: COLORS.background,
 	},
 	rowLeft: {
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-	rowIcon: {
+	iconContainer: {
+		width: 36,
+		height: 36,
+		borderRadius: 10,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginRight: 12,
+	},
+	rowIconText: {
 		fontSize: 18,
-		marginRight: 10,
 	},
 	rowLabel: {
 		fontSize: 16,
+		fontWeight: '600',
 		color: COLORS.text,
 	},
-	rowPressed: {
-		transform: [{ scale: 0.985 }],
-		opacity: 0.96,
-	},
-	versionText: {
+	rowValue: {
 		fontSize: 14,
 		color: COLORS.textSecondary,
+		fontWeight: '500',
 	},
 	logoutButton: {
-		height: 50,
-		marginHorizontal: 24,
-		marginTop: 8,
-		borderRadius: 12,
-		borderWidth: 1,
-		borderColor: COLORS.accent,
+		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: 'transparent',
+		marginHorizontal: 24,
+		marginTop: 8,
+		height: 58,
+		borderRadius: 24,
+		borderWidth: 1,
+		borderColor: COLORS.error + '30',
+		backgroundColor: COLORS.white,
+		...Platform.select({
+			ios: {
+				shadowColor: COLORS.error,
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.05,
+				shadowRadius: 4,
+			},
+			android: {
+				elevation: 0,
+			},
+		}),
+	},
+	logoutPressed: {
+		backgroundColor: COLORS.error + '05',
+		transform: [{ scale: 0.98 }],
 	},
 	logoutText: {
 		fontSize: 16,
-		color: COLORS.accent,
-		fontWeight: '600',
+		fontWeight: '700',
+		color: COLORS.error,
+		marginLeft: 8,
 	},
 });
 
 export default SettingsScreen;
+
+
+
