@@ -1,19 +1,23 @@
 import PropTypes from 'prop-types';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-const IngredientChip = ({ label, isSelected, onPress }) => {
+import { COLORS } from '../../../core/theme';
+
+const IngredientChip = ({ label, isSelected, onPress, disabled }) => {
   return (
     <View style={styles.touchTargetWrapper}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
-        accessibilityState={{ selected: isSelected }}
+        accessibilityState={{ selected: isSelected, disabled }}
+        disabled={disabled}
         hitSlop={styles.hitSlopSize}
         onPress={onPress}
         style={({ pressed }) => [
           styles.chip,
           isSelected ? styles.selectedChip : styles.unselectedChip,
-          pressed && styles.pressedChip,
+          disabled && styles.disabledChip,
+          pressed && !disabled && styles.pressedChip,
         ]}
       >
         <Text
@@ -33,10 +37,12 @@ IngredientChip.propTypes = {
   label: PropTypes.string.isRequired,
   isSelected: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
 };
 
 IngredientChip.defaultProps = {
   isSelected: false,
+  disabled: false,
 };
 
 const styles = StyleSheet.create({
@@ -47,36 +53,46 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   chip: {
-    minHeight: 40,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
+    minHeight: 44,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
   },
   unselectedChip: {
-    backgroundColor: '#E5E7EB',
-    borderColor: '#9CA3AF',
+    backgroundColor: '#ededfb',
+    borderColor: COLORS.primary,
   },
   selectedChip: {
-    backgroundColor: '#16A34A',
-    borderColor: 'transparent',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   pressedChip: {
-    opacity: 0.82,
+    opacity: 0.78,
+    transform: [{ scale: 0.97 }],
+  },
+  disabledChip: {
+    opacity: 0.38,
   },
   label: {
     fontSize: 14,
     lineHeight: 20,
+    letterSpacing: 0.1,
   },
   unselectedLabel: {
-    color: '#374151',
-    fontWeight: '400',
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   selectedLabel: {
-    color: '#FFFFFF',
-    fontWeight: '500',
+    color: COLORS.white,
+    fontWeight: '700',
   },
   hitSlopSize: {
     top: 2,
