@@ -57,6 +57,15 @@ install3.log
 assemble.log
 kcheck.log
 build_kotlin.log
+web-build-log.txt
+
+# Web build output
+web-build/
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firebase-debug.*.log*
 
 # Fastlane (if later added)
 **/fastlane/report.xml
