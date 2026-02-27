@@ -1,17 +1,13 @@
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Alert,
-  FlatList,
-  LayoutAnimation,
-  Platform,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
+    Alert,
+    LayoutAnimation,
+    Platform,
+    StyleSheet,
+    UIManager,
+    View,
 } from 'react-native';
 
-import { COLORS } from '../../../core/theme';
 import IngredientChip from './IngredientChip';
 
 if (
@@ -21,57 +17,61 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const EMPTY_ARRAY = [];
+interface IngredientSelectorProps {
+  ingredients: string[];
+  maxSelection?: number;
+  onSelectionChange: (selected: string[]) => void;
+  initialSelection?: string[];
+}
 
-const areArraysEqual = (first, second) => {
+const EMPTY_ARRAY: string[] = [];
+
+function areArraysEqual<T>(first: T[], second: T[]): boolean {
   if (first === second) {
     return true;
   }
-
   if (first.length !== second.length) {
     return false;
   }
-
-  for (let index = 0; index < first.length; index += 1) {
-    if (first[index] !== second[index]) {
+  for (let i = 0; i < first.length; i += 1) {
+    if (first[i] !== second[i]) {
       return false;
     }
   }
-
   return true;
-};
+}
 
 const IngredientSelector = ({
   ingredients,
   maxSelection = 5,
   onSelectionChange,
   initialSelection,
-}) => {
+}: IngredientSelectorProps) => {
   const ingredientList = useMemo(
     () => (Array.isArray(ingredients) ? ingredients : EMPTY_ARRAY),
     [ingredients],
   );
+
   const initialItems = useMemo(
     () => (Array.isArray(initialSelection) ? initialSelection : EMPTY_ARRAY),
     [initialSelection],
   );
 
   const sanitizedInitialSelection = useMemo(() => {
-    const allowedIngredients = new Set(ingredientList);
-
+    const allowed = new Set(ingredientList);
     return initialItems
-      .filter(name => allowedIngredients.has(name))
+      .filter(name => allowed.has(name))
       .slice(0, maxSelection);
   }, [ingredientList, initialItems, maxSelection]);
 
-  const [selectedIngredients, setSelectedIngredients] = useState(
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>(
     sanitizedInitialSelection,
   );
 
   useEffect(() => {
-    setSelectedIngredients(prevSelected =>
-      areArraysEqual(prevSelected, sanitizedInitialSelection)
-        ? prevSelected
+    setSelectedIngredients(prev =>
+      areArraysEqual(prev, sanitizedInitialSelection)
+        ? prev
         : sanitizedInitialSelection,
     );
   }, [sanitizedInitialSelection]);
@@ -88,7 +88,7 @@ const IngredientSelector = ({
   }, [maxSelection]);
 
   const toggleIngredient = useCallback(
-    ingredientName => {
+    (ingredientName: string) => {
       const isCurrentlySelected = selectedIngredients.includes(ingredientName);
 
       if (!isCurrentlySelected && selectedIngredients.length >= maxSelection) {
@@ -98,43 +98,24 @@ const IngredientSelector = ({
 
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
-      setSelectedIngredients(prevSelected => {
-        if (prevSelected.includes(ingredientName)) {
-          return prevSelected.filter(name => name !== ingredientName);
+      setSelectedIngredients(prev => {
+        if (prev.includes(ingredientName)) {
+          return prev.filter(name => name !== ingredientName);
         }
-
-        return [...prevSelected, ingredientName];
+        return [...prev, ingredientName];
       });
     },
     [maxSelection, selectedIngredients, showMaxSelectionAlert],
   );
 
-  const renderIngredient = useCallback(
-    ({ item }) => {
-      const isSelected = selectedIngredients.includes(item);
-      const isDisabled = !isSelected && selectedIngredients.length >= maxSelection;
-
-      return (
-        <View style={styles.itemContainer}>
-          <IngredientChip
-            disabled={isDisabled}
-            isSelected={isSelected}
-            label={item}
-            onPress={() => toggleIngredient(item)}
-          />
-        </View>
-      );
-    },
-    [maxSelection, selectedIngredients, toggleIngredient],
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.grid}>
-        {ingredientList.map((item) => {
+        {ingredientList.map(item => {
           const isSelected = selectedIngredients.includes(item);
-          const isDisabled = !isSelected && selectedIngredients.length >= maxSelection;
-          
+          const isDisabled =
+            !isSelected && selectedIngredients.length >= maxSelection;
+
           return (
             <View key={item} style={styles.itemContainer}>
               <IngredientChip
@@ -149,18 +130,6 @@ const IngredientSelector = ({
       </View>
     </View>
   );
-};
-
-IngredientSelector.propTypes = {
-  ingredients: PropTypes.arrayOf(PropTypes.string).isRequired,
-  maxSelection: PropTypes.number,
-  onSelectionChange: PropTypes.func.isRequired,
-  initialSelection: PropTypes.arrayOf(PropTypes.string),
-};
-
-IngredientSelector.defaultProps = {
-  maxSelection: 5,
-  initialSelection: [],
 };
 
 const styles = StyleSheet.create({

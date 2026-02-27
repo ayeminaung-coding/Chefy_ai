@@ -1,22 +1,35 @@
-import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     FlatList,
+    ListRenderItemInfo,
     RefreshControl,
     StyleSheet,
     Text,
     View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import { COLORS } from '../../../core/theme';
+import { RecipeItem } from '../../../types';
 import RecipeCard from './RecipeCard';
+
+interface RecipeListProps {
+  recipes: RecipeItem[];
+  onRecipePress: (id: number) => void;
+  emptyMessage?: string;
+  ListHeaderComponent?: React.ComponentType | React.ReactElement | null;
+  onBookmark?: (recipe: RecipeItem) => void;
+  getIsBookmarked?: (id: number) => boolean;
+}
 
 const RecipeList = ({
   recipes,
   onRecipePress,
-  emptyMessage,
+  emptyMessage = 'Try selecting different ingredients to find the perfect recipe.',
   ListHeaderComponent,
-}) => {
+  onBookmark,
+  getIsBookmarked,
+}: RecipeListProps) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(() => {
@@ -27,14 +40,16 @@ const RecipeList = ({
   }, []);
 
   const renderItem = useCallback(
-    ({ item }) => (
+    ({ item }: ListRenderItemInfo<RecipeItem>) => (
       <RecipeCard
         onPress={() => onRecipePress(item.id)}
         recipe={item}
         style={styles.cardOverride}
+        onBookmark={onBookmark ? () => onBookmark(item) : undefined}
+        isBookmarked={getIsBookmarked ? getIsBookmarked(item.id) : false}
       />
     ),
-    [onRecipePress],
+    [onRecipePress, onBookmark, getIsBookmarked],
   );
 
   const renderEmpty = useCallback(
@@ -60,10 +75,10 @@ const RecipeList = ({
         data={recipes}
         keyExtractor={item => String(item.id)}
         ListEmptyComponent={renderEmpty}
-        ListHeaderComponent={ListHeaderComponent || null}
+        ListHeaderComponent={ListHeaderComponent ?? null}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={handleRefresh}
             colors={[COLORS.primary]}
             tintColor={COLORS.primary}
@@ -76,50 +91,34 @@ const RecipeList = ({
   );
 };
 
-RecipeList.propTypes = {
-  recipes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onRecipePress: PropTypes.func.isRequired,
-  emptyMessage: PropTypes.string,
-  ListHeaderComponent: PropTypes.oneOfType([
-    PropTypes.element,
-    PropTypes.func,
-  ]),
-};
-
-RecipeList.defaultProps = {
-  emptyMessage: "Try selecting different ingredients to find the perfect recipe.",
-  ListHeaderComponent: null,
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   contentContainer: {
     paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 100,
+    paddingTop: 24,
+    paddingBottom: 24,
   },
   emptyContentContainer: {
     flexGrow: 1,
     justifyContent: 'center',
   },
   cardOverride: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   emptyStateContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: 32,
   },
   emptyIconContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: COLORS.primary + '10',
+    backgroundColor: COLORS.primary + '15',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   emptyStateTitle: {
     fontSize: 20,
@@ -128,12 +127,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   emptyStateText: {
-    textAlign: 'center',
-    color: COLORS.textSecondary,
     fontSize: 15,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
     lineHeight: 22,
   },
 });
 
 export default RecipeList;
-

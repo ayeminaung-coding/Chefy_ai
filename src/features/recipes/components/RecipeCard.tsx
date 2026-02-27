@@ -1,9 +1,24 @@
-import PropTypes from 'prop-types';
-import { Image, Pressable, StyleSheet, Text, View, Platform } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../../../core/theme';
 
-const RecipeCard = ({ recipe, onPress, onBookmark, isBookmarked, style }) => {
+import { COLORS } from '../../../core/theme';
+import { RecipeItem } from '../../../types';
+
+interface RecipeCardProps {
+  recipe: RecipeItem;
+  onPress: (recipe: RecipeItem) => void;
+  onBookmark?: (recipe: RecipeItem) => void;
+  isBookmarked?: boolean;
+  style?: object | object[];
+}
+
+const RecipeCard = ({
+  recipe,
+  onPress,
+  onBookmark,
+  isBookmarked = false,
+  style,
+}: RecipeCardProps) => {
   const handleBookmarkPress = () => {
     if (onBookmark) {
       onBookmark(recipe);
@@ -53,19 +68,25 @@ const RecipeCard = ({ recipe, onPress, onBookmark, isBookmarked, style }) => {
           {recipe.title}
         </Text>
 
-        <View style={styles.metaRow}>
-          <View style={styles.metaItem}>
-            <Ionicons color={COLORS.textSecondary} name="time-outline" size={14} />
-            <Text style={styles.metaText}>{`${recipe.readyInMinutes}m`}</Text>
+        {(recipe.readyInMinutes != null || recipe.servings != null) && (
+          <View style={styles.metaRow}>
+            {recipe.readyInMinutes != null && (
+              <View style={styles.metaItem}>
+                <Ionicons color={COLORS.textSecondary} name="time-outline" size={14} />
+                <Text style={styles.metaText}>{`${recipe.readyInMinutes}m`}</Text>
+              </View>
+            )}
+            {recipe.readyInMinutes != null && recipe.servings != null && (
+              <View style={styles.dot} />
+            )}
+            {recipe.servings != null && (
+              <View style={styles.metaItem}>
+                <Ionicons color={COLORS.textSecondary} name="people-outline" size={14} />
+                <Text style={styles.metaText}>{`${recipe.servings} serving`}</Text>
+              </View>
+            )}
           </View>
-
-          <View style={styles.dot} />
-
-          <View style={styles.metaItem}>
-            <Ionicons color={COLORS.textSecondary} name="people-outline" size={14} />
-            <Text style={styles.metaText}>{`${recipe.servings} serving`}</Text>
-          </View>
-        </View>
+        )}
 
         {recipe.missedIngredientCount > 0 && (
           <View style={styles.badge}>
@@ -77,27 +98,6 @@ const RecipeCard = ({ recipe, onPress, onBookmark, isBookmarked, style }) => {
       </View>
     </Pressable>
   );
-};
-
-RecipeCard.propTypes = {
-  recipe: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    readyInMinutes: PropTypes.number.isRequired,
-    servings: PropTypes.number.isRequired,
-    missedIngredientCount: PropTypes.number.isRequired,
-  }).isRequired,
-  onPress: PropTypes.func.isRequired,
-  onBookmark: PropTypes.func,
-  isBookmarked: PropTypes.bool,
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-};
-
-RecipeCard.defaultProps = {
-  onBookmark: undefined,
-  isBookmarked: false,
-  style: undefined,
 };
 
 const styles = StyleSheet.create({
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     left: 10,
   },
   badge: {
-    backgroundColor: COLORS.error + '15', // 15% opacity
+    backgroundColor: COLORS.error + '15',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,

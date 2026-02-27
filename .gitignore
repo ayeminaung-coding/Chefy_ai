@@ -12,6 +12,9 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
+# API keys — never commit
+src/config/env.js
+
 # Editor/IDE
 .idea/
 .vscode/

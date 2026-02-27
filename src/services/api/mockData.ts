@@ -1,4 +1,6 @@
-﻿export const MOCK_RECIPES = [
+import type { MockUser, RecipeDetail } from '../../types';
+
+export const MOCK_RECIPES: RecipeDetail[] = [
   {
     id: 101,
     title: 'Garlic Soy Chicken Rice Bowl',
@@ -6,6 +8,8 @@
     readyInMinutes: 25,
     servings: 2,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Chicken', amount: 250, unit: 'g' },
       { name: 'Rice', amount: 1, unit: 'cup' },
@@ -28,6 +32,8 @@
     readyInMinutes: 15,
     servings: 1,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Egg', amount: 2, unit: 'pcs' },
       { name: 'Mushroom', amount: 80, unit: 'g' },
@@ -50,6 +56,8 @@
     readyInMinutes: 20,
     servings: 2,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Rice', amount: 2, unit: 'cups' },
       { name: 'Egg', amount: 2, unit: 'pcs' },
@@ -71,6 +79,8 @@
     readyInMinutes: 35,
     servings: 3,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Pasta', amount: 250, unit: 'g' },
       { name: 'Chicken', amount: 220, unit: 'g' },
@@ -93,6 +103,8 @@
     readyInMinutes: 30,
     servings: 2,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Potato', amount: 2, unit: 'pcs' },
       { name: 'Carrot', amount: 1, unit: 'pc' },
@@ -102,7 +114,7 @@
     ],
     instructions: [
       'Slice potato and carrot into thin strips.',
-      'Heat oil in a pan and Sauté onion until fragrant.',
+      'Heat oil in a pan and sauté onion until fragrant.',
       'Add potato and carrot, stir-frying until tender.',
       'Add soy sauce and a splash of water, then cook 2 more minutes.',
       'Serve hot with rice or bread.',
@@ -115,6 +127,8 @@
     readyInMinutes: 22,
     servings: 2,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Rice', amount: 2, unit: 'cups' },
       { name: 'Mushroom', amount: 100, unit: 'g' },
@@ -136,6 +150,8 @@
     readyInMinutes: 18,
     servings: 2,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Chicken', amount: 200, unit: 'g' },
       { name: 'Lettuce', amount: 8, unit: 'leaves' },
@@ -157,6 +173,8 @@
     readyInMinutes: 12,
     servings: 1,
     missedIngredientCount: 0,
+    usedIngredientCount: 5,
+    sourceUrl: null,
     ingredients: [
       { name: 'Bread', amount: 2, unit: 'slices' },
       { name: 'Tomato', amount: 1, unit: 'pc' },
@@ -173,7 +191,7 @@
   },
 ];
 
-export const INGREDIENT_LIST = [
+export const INGREDIENT_LIST: string[] = [
   'Chicken',
   'Egg',
   'Rice',
@@ -196,8 +214,7 @@ export const INGREDIENT_LIST = [
   'Mushroom',
 ];
 
-export const MOCK_USER = {
-  userId: 'u_8823',
+export const MOCK_USER: MockUser = {
   username: 'YasuoChef',
   avatarUrl: 'https://i.pravatar.cc/150?img=33',
   preferences: {
@@ -205,6 +222,4 @@ export const MOCK_USER = {
     isHalal: false,
     darkMode: false,
   },
-  savedRecipeIds: [101, 103],
 };
-

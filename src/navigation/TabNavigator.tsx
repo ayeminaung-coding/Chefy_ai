@@ -1,20 +1,21 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { COLORS } from '../core/theme';
 import FavoritesScreen from '../features/favorites/screens/FavoritesScreen';
 import HomeScreen from '../features/ingredients/screens/HomeScreen';
 import SettingsScreen from '../features/settings/screens/SettingsScreen';
+import { TabParamList } from '../types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<TabParamList>();
 
-const TAB_ICONS = {
-  Home:      { active: 'home',           inactive: 'home-outline' },
-  Favorites: { active: 'heart',          inactive: 'heart-outline' },
-  Settings:  { active: 'settings',       inactive: 'settings-outline' },
+const TAB_ICONS: Record<keyof TabParamList, { active: string; inactive: string }> = {
+  Home:      { active: 'home',      inactive: 'home-outline' },
+  Favorites: { active: 'heart',     inactive: 'heart-outline' },
+  Settings:  { active: 'settings',  inactive: 'settings-outline' },
 };
 
-const screenOptions = ({ route }) => ({
+const screenOptions = ({ route }: { route: { name: keyof TabParamList } }): BottomTabNavigationOptions => ({
   headerShown: false,
   tabBarActiveTintColor: COLORS.primary,
   tabBarInactiveTintColor: COLORS.textSecondary,

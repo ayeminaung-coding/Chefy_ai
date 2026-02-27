@@ -1,9 +1,9 @@
 export const COLORS = {
   text: '#1A1A1A',
   background: '#F8F9FA',
-  primary: '#FF6B6B', // Modern Coral/Red for food
-  secondary: '#FFD93D', // Warm Yellow
-  accent: '#4D96FF', // Soft Blue
+  primary: '#FF6B6B',
+  secondary: '#FFD93D',
+  accent: '#4D96FF',
   white: '#FFFFFF',
   textSecondary: '#6C757D',
   success: '#2ECC71',
@@ -13,6 +13,9 @@ export const COLORS = {
   disabled: '#CED4DA',
   card: '#FFFFFF',
   overlay: 'rgba(0,0,0,0.4)',
-};
+} as const;
+
+export type ColorKey = keyof typeof COLORS;
+export type ColorValue = (typeof COLORS)[ColorKey];
 
 export default COLORS;
