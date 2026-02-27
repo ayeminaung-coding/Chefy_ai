@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { COLORS } from '../../../core/theme';
+import { Colors, useAppTheme } from '../../../core/theme';
 import useFavoritesStore from '../../../store/favoritesStore';
 import useRecipeStore from '../../../store/recipeStore';
 import { RootStackParamList } from '../../../types';
@@ -20,6 +20,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'RecipeResults'>;
 
 const RecipeResultsScreen = ({ route, navigation }: Props) => {
   const { ingredients = [] } = route.params ?? {};
+  const { colors } = useAppTheme();
+  const s = makeStyles(colors);
 
   const { recipes, loading, error, searchRecipes } = useRecipeStore();
   const { isFavorite, toggleFavorite } = useFavoritesStore();
@@ -37,15 +39,15 @@ const RecipeResultsScreen = ({ route, navigation }: Props) => {
   );
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.header}>
-        <View style={styles.headerContent}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+    <View style={s.container}>
+      <SafeAreaView style={s.header}>
+        <View style={s.headerContent}>
+          <Pressable onPress={() => navigation.goBack()} style={s.backButton}>
+            <Ionicons name="chevron-back" size={24} color={colors.text} />
           </Pressable>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Recommended</Text>
-            <Text style={styles.subtitle}>
+          <View style={s.titleContainer}>
+            <Text style={s.title}>Recommended</Text>
+            <Text style={s.subtitle}>
               {loading
                 ? 'Searching…'
                 : error
@@ -57,20 +59,20 @@ const RecipeResultsScreen = ({ route, navigation }: Props) => {
       </SafeAreaView>
 
       {loading ? (
-        <View style={styles.centeredState}>
-          <ActivityIndicator color={COLORS.primary} size="large" />
-          <Text style={styles.stateText}>Finding the best recipes…</Text>
+        <View style={s.centeredState}>
+          <ActivityIndicator color={colors.primary} size="large" />
+          <Text style={s.stateText}>Finding the best recipes…</Text>
         </View>
       ) : error ? (
-        <View style={styles.centeredState}>
-          <Ionicons name="alert-circle-outline" size={48} color={COLORS.error} />
-          <Text style={styles.errorTitle}>Something went wrong</Text>
-          <Text style={styles.stateText}>{error}</Text>
+        <View style={s.centeredState}>
+          <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
+          <Text style={s.errorTitle}>Something went wrong</Text>
+          <Text style={s.stateText}>{error}</Text>
           <Pressable
             onPress={() => searchRecipes(ingredients)}
-            style={styles.retryButton}
+            style={s.retryButton}
           >
-            <Text style={styles.retryText}>Try Again</Text>
+            <Text style={s.retryText}>Try Again</Text>
           </Pressable>
         </View>
       ) : (
@@ -86,57 +88,20 @@ const RecipeResultsScreen = ({ route, navigation }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: {
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.background,
-  },
-  titleContainer: { marginLeft: 16 },
-  title: { fontSize: 20, fontWeight: '800', color: COLORS.text },
-  subtitle: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '500' },
-  centeredState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-    gap: 12,
-  },
-  stateText: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginTop: 4,
-  },
-  retryButton: {
-    marginTop: 8,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    backgroundColor: COLORS.primary,
-    borderRadius: 16,
-  },
-  retryText: { color: COLORS.white, fontWeight: '700', fontSize: 15 },
-});
+const makeStyles = (colors: Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    header: { backgroundColor: colors.white, borderBottomWidth: 1, borderBottomColor: colors.border },
+    headerContent: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12 },
+    backButton: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+    titleContainer: { marginLeft: 16 },
+    title: { fontSize: 20, fontWeight: '800', color: colors.text },
+    subtitle: { fontSize: 13, color: colors.textSecondary, fontWeight: '500' },
+    centeredState: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, gap: 12 },
+    stateText: { fontSize: 15, color: colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+    errorTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginTop: 4 },
+    retryButton: { marginTop: 8, paddingHorizontal: 28, paddingVertical: 14, backgroundColor: colors.primary, borderRadius: 16 },
+    retryText: { color: colors.white, fontWeight: '700', fontSize: 15 },
+  });
 
 export default RecipeResultsScreen;

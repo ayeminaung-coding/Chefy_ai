@@ -3,22 +3,36 @@ import type { RecipeDetail, RecipeItem } from '../../types';
 
 const BASE_URL = 'https://api.spoonacular.com';
 
+export interface SearchOptions {
+  /** Spoonacular diet type: 'vegetarian' | 'vegan' | 'gluten free' | etc. */
+  diet?: string;
+  /** Comma-separated ingredient names to exclude (used for halal filter). */
+  excludeIngredients?: string[];
+}
+
 /**
- * Search recipes by a list of ingredient names.
- * Returns a lightweight list suitable for RecipeCard.
+ * Search recipes by ingredients using complexSearch, which supports
+ * dietary filters (diet, excludeIngredients) not available on findByIngredients.
  */
 export const searchByIngredients = async (
   ingredients: string[],
+  options: SearchOptions = {},
 ): Promise<RecipeItem[]> => {
-  const joined = ingredients.map((i) => encodeURIComponent(i.trim())).join(',');
-  const url =
-    `${BASE_URL}/recipes/findByIngredients` +
-    `?ingredients=${joined}` +
-    `&number=20` +
-    `&ranking=1` +
-    `&ignorePantry=true` +
-    `&apiKey=${SPOONACULAR_API_KEY}`;
+  const params = new URLSearchParams({
+    includeIngredients: ingredients.map((i) => i.trim()).join(','),
+    number: '20',
+    sort: 'max-used-ingredients',
+    apiKey: SPOONACULAR_API_KEY,
+  });
 
+  if (options.diet) {
+    params.append('diet', options.diet);
+  }
+  if (options.excludeIngredients?.length) {
+    params.append('excludeIngredients', options.excludeIngredients.join(','));
+  }
+
+  const url = `${BASE_URL}/recipes/complexSearch?${params.toString()}`;
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -27,15 +41,14 @@ export const searchByIngredients = async (
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data: any[] = await response.json();
+  const data: { results: any[] } = await response.json();
 
-  return data.map((item) => ({
+  return (data.results ?? []).map((item) => ({
     id: item.id as number,
     title: item.title as string,
     image: item.image as string,
-    missedIngredientCount: (item.missedIngredientCount as number) ?? 0,
-    usedIngredientCount: (item.usedIngredientCount as number) ?? 0,
-    // readyInMinutes and servings come from the detail endpoint only
+    missedIngredientCount: 0,
+    usedIngredientCount: ingredients.length,
     readyInMinutes: null,
     servings: null,
   }));

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { searchByIngredients } from '../services/api/spoonacularApi';
 import type { RecipeItem } from '../types';
+import useSettingsStore from './settingsStore';
 
 interface RecipeState {
   recipes: RecipeItem[];
@@ -16,9 +17,16 @@ const useRecipeStore = create<RecipeState>((set) => ({
   error: null,
 
   searchRecipes: async (ingredients: string[]) => {
+    const { isVegetarian, isHalal } = useSettingsStore.getState();
+    const options = {
+      diet: isVegetarian ? 'vegetarian' : undefined,
+      excludeIngredients: isHalal
+        ? ['pork', 'bacon', 'ham', 'lard', 'gelatin', 'alcohol', 'wine', 'beer']
+        : [],
+    };
     set({ loading: true, error: null, recipes: [] });
     try {
-      const results = await searchByIngredients(ingredients);
+      const results = await searchByIngredients(ingredients, options);
       set({ recipes: results, loading: false });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong.';

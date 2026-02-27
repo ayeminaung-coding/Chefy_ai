@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { COLORS } from '../../../core/theme';
+import { Colors, useAppTheme } from '../../../core/theme';
 import { RecipeItem } from '../../../types';
 import RecipeCard from './RecipeCard';
 
@@ -30,6 +30,8 @@ const RecipeList = ({
   onBookmark,
   getIsBookmarked,
 }: RecipeListProps) => {
+  const { colors } = useAppTheme();
+  const s = makeStyles(colors);
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(() => {
@@ -44,7 +46,7 @@ const RecipeList = ({
       <RecipeCard
         onPress={() => onRecipePress(item.id)}
         recipe={item}
-        style={styles.cardOverride}
+        style={s.cardOverride}
         onBookmark={onBookmark ? () => onBookmark(item) : undefined}
         isBookmarked={getIsBookmarked ? getIsBookmarked(item.id) : false}
       />
@@ -54,23 +56,23 @@ const RecipeList = ({
 
   const renderEmpty = useCallback(
     () => (
-      <View style={styles.emptyStateContainer}>
-        <View style={styles.emptyIconContainer}>
-          <Ionicons color={COLORS.primary} name="restaurant-outline" size={40} />
+        <View style={s.emptyStateContainer}>
+        <View style={s.emptyIconContainer}>
+          <Ionicons color={colors.primary} name="restaurant-outline" size={40} />
         </View>
-        <Text style={styles.emptyStateTitle}>No Recipes Found</Text>
-        <Text style={styles.emptyStateText}>{emptyMessage}</Text>
+        <Text style={s.emptyStateTitle}>No Recipes Found</Text>
+        <Text style={s.emptyStateText}>{emptyMessage}</Text>
       </View>
     ),
     [emptyMessage],
   );
 
   return (
-    <View style={styles.container}>
+    <View style={s.container}>
       <FlatList
         contentContainerStyle={[
-          styles.contentContainer,
-          recipes.length === 0 && styles.emptyContentContainer,
+          s.contentContainer,
+          recipes.length === 0 && s.emptyContentContainer,
         ]}
         data={recipes}
         keyExtractor={item => String(item.id)}
@@ -80,8 +82,8 @@ const RecipeList = ({
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         }
         renderItem={renderItem}
@@ -91,47 +93,20 @@ const RecipeList = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 24,
-  },
-  emptyContentContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  cardOverride: {
-    marginBottom: 16,
-  },
-  emptyStateContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.primary + '15',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  emptyStateTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-});
+const makeStyles = (colors: Colors) =>
+  StyleSheet.create({
+    container: { flex: 1 },
+    contentContainer: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 24 },
+    emptyContentContainer: { flexGrow: 1, justifyContent: 'center' },
+    cardOverride: { marginBottom: 16 },
+    emptyStateContainer: { alignItems: 'center', paddingHorizontal: 32 },
+    emptyIconContainer: {
+      width: 80, height: 80, borderRadius: 40,
+      backgroundColor: colors.primary + '15',
+      alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+    },
+    emptyStateTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 8 },
+    emptyStateText: { fontSize: 15, color: colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+  });
 
 export default RecipeList;

@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '../../../core/theme';
+import { Colors, useAppTheme } from '../../../core/theme';
 import useFavoritesStore from '../../../store/favoritesStore';
 import { RootStackParamList, TabParamList } from '../../../types';
 import RecipeList from '../../recipes/components/RecipeList';
@@ -19,6 +19,8 @@ interface Props {
 }
 
 const FavoritesScreen = ({ navigation }: Props) => {
+  const { colors } = useAppTheme();
+  const s = makeStyles(colors);
   const { favorites, loadFavorites } = useFavoritesStore();
 
   useEffect(() => {
@@ -26,11 +28,11 @@ const FavoritesScreen = ({ navigation }: Props) => {
   }, [loadFavorites]);
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Your Favorites</Text>
-          <Text style={styles.subtitle}>
+    <View style={s.container}>
+      <SafeAreaView style={s.header}>
+        <View style={s.headerContent}>
+          <Text style={s.title}>Your Favorites</Text>
+          <Text style={s.subtitle}>
             {favorites.length} {favorites.length === 1 ? 'recipe' : 'recipes'} saved
           </Text>
         </View>
@@ -45,31 +47,32 @@ const FavoritesScreen = ({ navigation }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  headerContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-});
+const makeStyles = (colors: Colors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      backgroundColor: colors.white,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerContent: {
+      paddingHorizontal: 24,
+      paddingVertical: 16,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: '800',
+      color: colors.text,
+    },
+    subtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      fontWeight: '500',
+      marginTop: 2,
+    },
+  });
 
 export default FavoritesScreen;

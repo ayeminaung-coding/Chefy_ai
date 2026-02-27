@@ -6,7 +6,7 @@ import {
     Text,
     Vibration,
 } from 'react-native';
-import { COLORS } from '../theme';
+import { Colors, useAppTheme } from '../theme';
 
 interface PrimaryButtonProps {
   title: string;
@@ -23,6 +23,8 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,
   style,
 }) => {
+  const { colors } = useAppTheme();
+  const s = makeStyles(colors);
   const isDisabled = disabled || loading;
 
   const handlePress = () => {
@@ -39,38 +41,39 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       disabled={isDisabled}
       onPress={handlePress}
       style={({ pressed }) => [
-        styles.button,
-        isDisabled ? styles.disabledButton : styles.enabledButton,
-        pressed && !isDisabled && styles.pressedButton,
+        s.button,
+        isDisabled ? s.disabledButton : s.enabledButton,
+        pressed && !isDisabled && s.pressedButton,
         style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={COLORS.white} size="small" />
+        <ActivityIndicator color={colors.white} size="small" />
       ) : (
-        <Text style={styles.title}>{title}</Text>
+        <Text style={s.title}>{title}</Text>
       )}
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    height: 58,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  enabledButton: { backgroundColor: COLORS.primary },
-  disabledButton: { backgroundColor: COLORS.disabled },
-  pressedButton: { opacity: 0.85, transform: [{ scale: 0.98 }] },
-  title: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.3,
-  },
-});
+const makeStyles = (colors: Colors) =>
+  StyleSheet.create({
+    button: {
+      height: 58,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 24,
+    },
+    enabledButton: { backgroundColor: colors.primary },
+    disabledButton: { backgroundColor: colors.disabled },
+    pressedButton: { opacity: 0.85, transform: [{ scale: 0.98 }] },
+    title: {
+      color: colors.white,
+      fontSize: 16,
+      fontWeight: '700',
+      letterSpacing: 0.3,
+    },
+  });
 
 export default PrimaryButton;
