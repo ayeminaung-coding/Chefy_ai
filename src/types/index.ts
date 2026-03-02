@@ -41,7 +41,13 @@ export interface MockUser {
 
 // ─── Navigation param lists ──────────────────────────────────────────────────
 
-/** Root native-stack navigator screens. */
+/** Auth stack screens (shown when the user is not signed in). */
+export type AuthStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+};
+
+/** Root native-stack navigator screens (shown when signed in). */
 export type RootStackParamList = {
   Tabs: undefined;
   RecipeResults: { ingredients: string[] };

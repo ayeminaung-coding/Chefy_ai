@@ -1,6 +1,16 @@
-// ⚠️  This file is listed in .gitignore — never commit API keys.
+// ⚠️  Values are loaded from `.env` — never commit `.env` with real keys.
+import {
+  SPOONACULAR_API_KEY as _SPOONACULAR_API_KEY,
+  FIREBASE_API_KEY,
+  FIREBASE_APP_ID,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_MEASUREMENT_ID,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+} from '@env';
 
-export const SPOONACULAR_API_KEY: string = '5008b7687dca41bb9169a106ea0939c7';
+export const SPOONACULAR_API_KEY: string = _SPOONACULAR_API_KEY;
 
 export interface FirebaseConfig {
   apiKey: string;
@@ -13,11 +23,11 @@ export interface FirebaseConfig {
 }
 
 export const FIREBASE_CONFIG: FirebaseConfig = {
-  apiKey: 'AIzaSyANo6ERPzrrG-CKrWgR8ktoDdHUNsSpBMQ',
-  authDomain: 'chefyai-161ed.firebaseapp.com',
-  projectId: 'chefyai-161ed',
-  storageBucket: 'chefyai-161ed.firebasestorage.app',
-  messagingSenderId: '1029041651553',
-  appId: '1:1029041651553:web:68ce855ea8f39692f80f20',
-  measurementId: 'G-WJP33RZFW5',
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
+  measurementId: FIREBASE_MEASUREMENT_ID,
 };

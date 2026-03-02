@@ -1,12 +1,11 @@
-import { getApps, initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { FIREBASE_CONFIG } from '../../config/env';
-
-// Prevent re-initializing the app on hot-reload
-const app =
-  getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApps()[0];
-
-// NOTE: getAnalytics() is a browser-only API and is intentionally
-// omitted — it throws at runtime in React Native.
-
+import { getApps, initializeApp } from 'firebase/app'; 
+import { getAuth } from 'firebase/auth'; 
+import { getFirestore } from 'firebase/firestore'; 
+import { FIREBASE_CONFIG } from '../../config/env'; 
+ 
+// Prevent re-initializing the app on hot-reload 
+const app = 
+  getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApps()[0]; 
+ 
+export const auth = getAuth(app); 
 export const db = getFirestore(app);

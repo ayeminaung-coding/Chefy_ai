@@ -1,22 +1,23 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { useMemo } from 'react';
 import {
-    Alert,
-    Image,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Switch,
-    Text,
-    View,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Colors, useAppTheme } from '../../../core/theme';
 import { MOCK_USER } from '../../../services/api/mockData';
+import useAuthStore from '../../../store/authStore';
 import useSettingsStore from '../../../store/settingsStore';
 import { TabParamList } from '../../../types';
 
@@ -69,6 +70,7 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
 
   const { isVegetarian, isHalal, darkMode, setVegetarian, setHalal, setDarkMode } =
     useSettingsStore();
+  const { logout, user } = useAuthStore();
 
   const appVersion = useMemo(() => '1.0.0', []);
 
@@ -78,7 +80,7 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
       {
         text: 'Log out',
         style: 'destructive',
-        onPress: () => Alert.alert('Logged out', 'You have been logged out.'),
+        onPress: () => logout(),
       },
     ]);
   };
@@ -103,8 +105,8 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
               <Ionicons name="camera" size={14} color={colors.white} />
             </View>
           </View>
-          <Text style={s.username}>{MOCK_USER.username}</Text>
-          <Text style={s.email}>yasuo@chefmail.com</Text>
+          <Text style={s.username}>{user?.displayName ?? MOCK_USER.username}</Text>
+          <Text style={s.email}>{user?.email ?? 'yasuo@chefmail.com'}</Text>
         </View>
 
         {/* ── Dietary filters (affect search results) ── */}

@@ -15,8 +15,10 @@ const TRANSPILE_NATIVE_MODULES = [
   'react-native-web',
 ];
 
+// Match both forward-slash (macOS/Linux) and backslash (Windows) separators
+// so that unneeded node_modules are correctly excluded from babel-loader.
 const transpileRegex = new RegExp(
-  `node_modules/(?!(${TRANSPILE_NATIVE_MODULES.join('|')})/)`
+  `[/\\\\]node_modules[/\\\\](?!(${TRANSPILE_NATIVE_MODULES.join('|')})[/\\\\])`
 );
 
 module.exports = (env, argv) => {
@@ -87,6 +89,9 @@ module.exports = (env, argv) => {
             options: {
               cacheDirectory: true,
               configFile: false,
+              // Suppress "deoptimised styling" warning for large files.
+              // Compact output is only relevant for Babel's printer, not runtime perf.
+              compact: false,
               presets: [
                 // modules: false → let webpack handle ES module syntax (import/export)
                 // directly. If Babel converts them to CJS first, webpack's runtime
@@ -102,6 +107,11 @@ module.exports = (env, argv) => {
                 ['@babel/plugin-proposal-class-properties', { loose: true }],
                 ['@babel/plugin-transform-private-methods', { loose: true }],
                 ['@babel/plugin-transform-private-property-in-object', { loose: true }],
+                // Load .env variables — mirrors the setup in babel.config.js
+                [
+                  'module:react-native-dotenv',
+                  { moduleName: '@env', path: '.env', safe: false, allowUndefined: false },
+                ],
               ],
             },
           },
@@ -147,7 +157,7 @@ module.exports = (env, argv) => {
     ],
 
     devServer: {
-      port: 3000,
+      port: 'auto',
       historyApiFallback: true,
       hot: true,
       open: true,
