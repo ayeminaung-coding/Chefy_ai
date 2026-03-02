@@ -8,9 +8,11 @@ import {
   FIREBASE_MESSAGING_SENDER_ID,
   FIREBASE_PROJECT_ID,
   FIREBASE_STORAGE_BUCKET,
+  GOOGLE_WEB_CLIENT_ID as _GOOGLE_WEB_CLIENT_ID,
 } from '@env';
 
 export const SPOONACULAR_API_KEY: string = _SPOONACULAR_API_KEY;
+export const GOOGLE_WEB_CLIENT_ID: string = _GOOGLE_WEB_CLIENT_ID;
 
 export interface FirebaseConfig {
   apiKey: string;

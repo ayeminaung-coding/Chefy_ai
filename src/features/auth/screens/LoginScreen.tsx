@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }: Props) => {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
-  const { login, loading, error, clearError } = useAuthStore();
+  const { login, googleSignIn, loading, error, clearError } = useAuthStore();
 
   // Subtle fade-in on mount
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -160,6 +160,29 @@ const LoginScreen = ({ navigation }: Props) => {
                 <Text style={s.btnText}>Sign In</Text>
               )}
             </Pressable>
+
+            {/* ── Divider ── */}
+            <View style={s.dividerRow}>
+              <View style={s.dividerLine} />
+              <Text style={s.dividerText}>or</Text>
+              <View style={s.dividerLine} />
+            </View>
+
+            {/* Google Sign-In button */}
+            <Pressable
+              disabled={loading}
+              onPress={googleSignIn}
+              style={({ pressed }) => [
+                s.googleBtn,
+                pressed && s.googleBtnPressed,
+                loading && s.btnDisabled,
+              ]}
+            >
+              <View style={s.googleIconWrap}>
+                <Text style={s.googleG}>G</Text>
+              </View>
+              <Text style={s.googleBtnText}>Continue with Google</Text>
+            </Pressable>
           </Animated.View>
 
           {/* ── Footer ── */}
@@ -252,6 +275,33 @@ const makeStyles = (colors: ReturnType<typeof import('../../../core/theme').useA
     footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 32 },
     footerText: { fontSize: 14, color: colors.textSecondary },
     footerLink: { fontSize: 14, fontWeight: '700', color: colors.primary },
+
+    dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+    dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+    dividerText: { marginHorizontal: 12, fontSize: 13, color: colors.textSecondary, fontWeight: '600' },
+
+    googleBtn: {
+      height: 56,
+      borderRadius: 16,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      backgroundColor: colors.white,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+    },
+    googleBtnPressed: { backgroundColor: colors.background, transform: [{ scale: 0.98 }] },
+    googleIconWrap: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: '#4285F4',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    googleG: { color: '#fff', fontSize: 14, fontWeight: '800' },
+    googleBtnText: { fontSize: 15, fontWeight: '700', color: colors.text },
   });
 
 export default LoginScreen;

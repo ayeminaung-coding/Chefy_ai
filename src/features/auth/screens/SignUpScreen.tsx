@@ -35,7 +35,7 @@ const SignUpScreen = ({ navigation }: Props) => {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [confirmFocused, setConfirmFocused] = useState(false);
 
-  const { signUp, loading, error, clearError } = useAuthStore();
+  const { signUp, googleSignIn, loading, error, clearError } = useAuthStore();
 
   // Fade-in on mount
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -219,6 +219,29 @@ const SignUpScreen = ({ navigation }: Props) => {
             <Text style={s.terms}>
               By signing up you agree to our Terms of Service and Privacy Policy.
             </Text>
+
+            {/* ── Divider ── */}
+            <View style={s.dividerRow}>
+              <View style={s.dividerLine} />
+              <Text style={s.dividerText}>or</Text>
+              <View style={s.dividerLine} />
+            </View>
+
+            {/* Google Sign-Up button */}
+            <Pressable
+              disabled={loading}
+              onPress={googleSignIn}
+              style={({ pressed }) => [
+                s.googleBtn,
+                pressed && s.googleBtnPressed,
+                loading && s.btnDisabled,
+              ]}
+            >
+              <View style={s.googleIconWrap}>
+                <Text style={s.googleG}>G</Text>
+              </View>
+              <Text style={s.googleBtnText}>Continue with Google</Text>
+            </Pressable>
           </Animated.View>
 
           {/* ── Footer ── */}
@@ -328,6 +351,33 @@ const makeStyles = (colors: ReturnType<typeof import('../../../core/theme').useA
     footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 32 },
     footerText: { fontSize: 14, color: colors.textSecondary },
     footerLink: { fontSize: 14, fontWeight: '700', color: colors.primary },
+
+    dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+    dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+    dividerText: { marginHorizontal: 12, fontSize: 13, color: colors.textSecondary, fontWeight: '600' },
+
+    googleBtn: {
+      height: 56,
+      borderRadius: 16,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      backgroundColor: colors.white,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+    },
+    googleBtnPressed: { backgroundColor: colors.background, transform: [{ scale: 0.98 }] },
+    googleIconWrap: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: '#4285F4',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    googleG: { color: '#fff', fontSize: 14, fontWeight: '800' },
+    googleBtnText: { fontSize: 15, fontWeight: '700', color: colors.text },
   });
 
 export default SignUpScreen;

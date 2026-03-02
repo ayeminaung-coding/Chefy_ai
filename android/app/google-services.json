@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1029041651553",
+    "project_id": "chefyai-161ed",
+    "storage_bucket": "chefyai-161ed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029041651553:android:96f71b758169d6abf80f20",
+        "android_client_info": {
+          "package_name": "com.chefyai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029041651553-4h9c7280ad5t7g15dd9jjv0hm25n0ti8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6ZPJfr2AzxuYdyWfYPMnsXW41Iim6GtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029041651553-4h9c7280ad5t7g15dd9jjv0hm25n0ti8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,12 +1,16 @@
 import {
     createUserWithEmailAndPassword,
+    GoogleAuthProvider,
     onAuthStateChanged,
+    signInWithCredential,
     signInWithEmailAndPassword,
     signOut,
     User,
 } from 'firebase/auth';
 import { create } from 'zustand';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
+import { GOOGLE_WEB_CLIENT_ID } from '../config/env';
 import { auth } from '../services/firebase/firebaseClient';
 import useFavoritesStore from './favoritesStore';
 
@@ -17,11 +21,15 @@ interface AuthState {
   initializing: boolean;
   login: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
+  googleSignIn: () => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
 
 const useAuthStore = create<AuthState>((set) => {
+  // Configure Google Sign-In
+  GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
+
   // Sync auth state → automatically load/clear favorites
   onAuthStateChanged(auth, (user) => {
     set({ user, initializing: false });
@@ -64,6 +72,22 @@ const useAuthStore = create<AuthState>((set) => {
             e instanceof Error
               ? e.message
               : 'Sign up failed. Please try again.',
+        });
+      }
+    },
+
+    googleSignIn: async () => {
+      set({ loading: true, error: null });
+      try {
+        await GoogleSignin.hasPlayServices();
+        const { data } = await GoogleSignin.signIn();
+        const credential = GoogleAuthProvider.credential(data?.idToken ?? null);
+        await signInWithCredential(auth, credential);
+        set({ loading: false });
+      } catch (e: unknown) {
+        set({
+          loading: false,
+          error: e instanceof Error ? e.message : 'Google sign-in failed. Please try again.',
         });
       }
     },

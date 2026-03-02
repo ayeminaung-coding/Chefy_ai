@@ -76,6 +76,11 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
 
   const appVersion = useMemo(() => '1.0.0', []);
 
+  // True when the user signed in via Google
+  const isGoogleUser = user?.providerData?.some(
+    (p) => p.providerId === 'google.com'
+  ) ?? false;
+
   const handleLogout = () => setLogoutModalVisible(true);
 
   return (
@@ -93,7 +98,14 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
       >
         <View style={s.profileSection}>
           <View style={s.avatarContainer}>
-            <Image source={{ uri: MOCK_USER.avatarUrl }} style={s.avatar} />
+            <Image
+              source={{
+                uri: isGoogleUser && user?.photoURL
+                  ? user.photoURL
+                  : MOCK_USER.avatarUrl,
+              }}
+              style={s.avatar}
+            />
             <View style={s.editBadge}>
               <Ionicons name="camera" size={14} color={colors.white} />
             </View>
@@ -214,7 +226,7 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
         onRequestClose={() => setLogoutModalVisible(false)}
       >
         <Pressable style={s.modalOverlay} onPress={() => setLogoutModalVisible(false)}>
-          <Pressable style={s.modalBox} onPress={() => {}}>
+          <Pressable style={s.modalBox} onPress={() => { }}>
             <View style={s.modalIconWrap}>
               <Ionicons name="log-out-outline" size={28} color={colors.error} />
             </View>
