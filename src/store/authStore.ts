@@ -1,14 +1,16 @@
 import {
-    createUserWithEmailAndPassword,
-    GoogleAuthProvider,
-    onAuthStateChanged,
-    signInWithCredential,
-    signInWithEmailAndPassword,
-    signOut,
-    User,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithCredential,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  User,
 } from 'firebase/auth';
 import { create } from 'zustand';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Platform } from 'react-native';
 
 import { GOOGLE_WEB_CLIENT_ID } from '../config/env';
 import { auth } from '../services/firebase/firebaseClient';
@@ -79,10 +81,17 @@ const useAuthStore = create<AuthState>((set) => {
     googleSignIn: async () => {
       set({ loading: true, error: null });
       try {
-        await GoogleSignin.hasPlayServices();
-        const { data } = await GoogleSignin.signIn();
-        const credential = GoogleAuthProvider.credential(data?.idToken ?? null);
-        await signInWithCredential(auth, credential);
+        if (Platform.OS === 'web') {
+          // Web: use Firebase's built-in popup flow — no native module needed
+          const provider = new GoogleAuthProvider();
+          await signInWithPopup(auth, provider);
+        } else {
+          // Android/iOS: use the native Google Sign-In module
+          await GoogleSignin.hasPlayServices();
+          const { data } = await GoogleSignin.signIn();
+          const credential = GoogleAuthProvider.credential(data?.idToken ?? null);
+          await signInWithCredential(auth, credential);
+        }
         set({ loading: false });
       } catch (e: unknown) {
         set({

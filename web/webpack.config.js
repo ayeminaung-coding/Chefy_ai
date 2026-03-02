@@ -68,6 +68,11 @@ module.exports = (env, argv) => {
           __dirname,
           'shims/react-native-reanimated.web.js'
         ),
+        // Stub out native Google Sign-In — web uses Firebase signInWithPopup instead
+        '@react-native-google-signin/google-signin': path.resolve(
+          __dirname,
+          'shims/google-signin.web.js'
+        ),
       },
     },
 
