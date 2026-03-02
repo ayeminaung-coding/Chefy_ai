@@ -8,6 +8,7 @@ import {
 import { create } from 'zustand';
 
 import { auth } from '../services/firebase/firebaseClient';
+import useFavoritesStore from './favoritesStore';
 
 interface AuthState {
   user: User | null;
@@ -21,9 +22,14 @@ interface AuthState {
 }
 
 const useAuthStore = create<AuthState>((set) => {
-  // Subscribe to Firebase Auth state changes
+  // Sync auth state → automatically load/clear favorites
   onAuthStateChanged(auth, (user) => {
     set({ user, initializing: false });
+    if (user) {
+      useFavoritesStore.getState().loadFavorites();
+    } else {
+      useFavoritesStore.getState().clearFavorites();
+    }
   });
 
   return {
@@ -63,9 +69,8 @@ const useAuthStore = create<AuthState>((set) => {
     },
 
     logout: async () => {
-      // Clear local state immediately so navigation transitions right away,
-      // regardless of how long signOut takes or whether it fails.
       set({ user: null });
+      useFavoritesStore.getState().clearFavorites();
       try {
         await signOut(auth);
       } catch {

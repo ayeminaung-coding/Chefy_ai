@@ -1,8 +1,8 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  Alert,
   Image,
+  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -72,18 +72,11 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
     useSettingsStore();
   const { logout, user } = useAuthStore();
 
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+
   const appVersion = useMemo(() => '1.0.0', []);
 
-  const handleLogout = () => {
-    Alert.alert('Log out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log out',
-        style: 'destructive',
-        onPress: () => logout(),
-      },
-    ]);
-  };
+  const handleLogout = () => setLogoutModalVisible(true);
 
   return (
     <View style={s.container}>
@@ -212,6 +205,38 @@ const SettingsScreen = ({ navigation: _navigation }: Props) => {
           <Text style={s.logoutText}>Logout</Text>
         </Pressable>
       </ScrollView>
+
+      {/* ── Logout confirmation modal (works on web + native) ── */}
+      <Modal
+        animationType="fade"
+        transparent
+        visible={logoutModalVisible}
+        onRequestClose={() => setLogoutModalVisible(false)}
+      >
+        <Pressable style={s.modalOverlay} onPress={() => setLogoutModalVisible(false)}>
+          <Pressable style={s.modalBox} onPress={() => {}}>
+            <View style={s.modalIconWrap}>
+              <Ionicons name="log-out-outline" size={28} color={colors.error} />
+            </View>
+            <Text style={s.modalTitle}>Log out</Text>
+            <Text style={s.modalMessage}>Are you sure you want to log out?</Text>
+            <View style={s.modalActions}>
+              <Pressable
+                style={({ pressed }) => [s.modalBtn, s.modalBtnCancel, pressed && s.modalBtnPressed]}
+                onPress={() => setLogoutModalVisible(false)}
+              >
+                <Text style={s.modalBtnCancelText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [s.modalBtn, s.modalBtnConfirm, pressed && s.modalBtnPressed]}
+                onPress={() => { setLogoutModalVisible(false); logout(); }}
+              >
+                <Text style={s.modalBtnConfirmText}>Log out</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -324,6 +349,52 @@ const makeStyles = (colors: Colors) =>
     },
     logoutPressed: { backgroundColor: colors.error + '05', transform: [{ scale: 0.98 }] },
     logoutText: { fontSize: 16, fontWeight: '700', color: colors.error, marginLeft: 8 },
+
+    // ── Logout modal ──
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 32,
+    },
+    modalBox: {
+      width: '100%',
+      backgroundColor: colors.white,
+      borderRadius: 24,
+      padding: 24,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    modalIconWrap: {
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      backgroundColor: colors.error + '12',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 16,
+    },
+    modalTitle: { fontSize: 18, fontWeight: '800', color: colors.text, marginBottom: 8 },
+    modalMessage: { fontSize: 14, color: colors.textSecondary, textAlign: 'center', marginBottom: 24, lineHeight: 20 },
+    modalActions: { flexDirection: 'row', gap: 12, width: '100%' },
+    modalBtn: {
+      flex: 1,
+      height: 48,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    modalBtnCancel: {
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    modalBtnConfirm: { backgroundColor: colors.error },
+    modalBtnPressed: { opacity: 0.8 },
+    modalBtnCancelText: { fontSize: 15, fontWeight: '700', color: colors.text },
+    modalBtnConfirmText: { fontSize: 15, fontWeight: '700', color: '#fff' },
   });
 
 export default SettingsScreen;

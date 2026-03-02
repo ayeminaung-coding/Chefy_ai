@@ -21,7 +21,7 @@ interface Props {
 const FavoritesScreen = ({ navigation }: Props) => {
   const { colors } = useAppTheme();
   const s = makeStyles(colors);
-  const { favorites, loadFavorites } = useFavoritesStore();
+  const { favorites, loadFavorites, toggleFavorite, isFavorite } = useFavoritesStore();
 
   useEffect(() => {
     loadFavorites();
@@ -41,6 +41,8 @@ const FavoritesScreen = ({ navigation }: Props) => {
       <RecipeList
         recipes={favorites}
         onRecipePress={id => navigation.navigate('RecipeDetail', { recipeId: id })}
+        onBookmark={toggleFavorite}
+        getIsBookmarked={isFavorite}
         emptyMessage="Start exploring and bookmark your favorite recipes!"
       />
     </View>
