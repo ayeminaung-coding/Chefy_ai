@@ -1,163 +1,174 @@
 # Chefy AI
 
-**Chefy AI** is a React Native mobile app that helps users discover recipes based on ingredients they already have at home. Users can apply dietary filters, save their favourite recipes, and enjoy a fully dark-mode-aware UI.
+Chefy AI is a React Native mobile app that helps users decide what to cook using ingredients they already have.
 
----
+The app is designed for a mini project presentation and focuses on practical value:
+- Reduce food waste by cooking with available ingredients.
+- Give fast recipe recommendations with dietary filtering.
+- Keep favorite recipes in one place.
 
-## Features
+## Project Summary
 
-- **Ingredient-based recipe search** — type in what's in your kitchen and get matched recipes via the Spoonacular API
-- **Dietary filters** — Vegetarian and Halal toggles that are applied to every search (persisted across app restarts)
-- **Save to Favourites** — bookmark recipes; persisted to Firebase Firestore
-- **Dark mode** — full dark/light theme toggle that immediately re-renders the entire UI
-- **Animated interactions** — bookmark pulse animation, pressable scale feedback, hero image parallax
+Users select ingredients on the Home screen, apply preferences (Vegetarian and Halal), and receive recipe recommendations from Spoonacular.
 
----
+The app uses a clean feature-based structure with Zustand stores, a dedicated API service layer, Firebase favorites persistence, and app-wide theme support.
+
+## Main Features
+
+1. Ingredient-based recipe search
+- Select 2 to 5 ingredients.
+- Recipe recommendations are fetched from Spoonacular.
+
+2. Dietary preferences
+- Vegetarian option uses Spoonacular diet filter.
+- Halal option is approximated by excluding non-halal ingredients (pork, bacon, ham, lard, gelatin, alcohol, wine, beer).
+- Preferences are persisted locally.
+
+3. Favorites
+- Users can bookmark and unbookmark recipes.
+- Favorites are persisted in Firebase Firestore.
+
+4. Theme support
+- Light and dark mode are supported across screens.
+- Theme choice is persisted in local storage.
+
+5. Ingredient search resilience
+- Ingredient lookup is API-first.
+- If the ingredient endpoint is unavailable or limited, the app gracefully falls back to local ingredient data so search still works.
+
+6. Recipe detail UI
+- Recipe details include hero image, stats, ingredients, and steps.
+- Back/Favorite controls are fixed at the top and status-bar-safe.
+- Start Cooking action is intentionally disabled for the mini project scope.
+
+## Demo Flow (For Presentation)
+
+1. Open Home and select ingredients.
+2. Type in ingredient search to show dynamic filtering.
+3. Go to Settings and toggle Vegetarian/Halal and Dark Mode.
+4. Return and fetch recipes.
+5. Open a recipe detail and bookmark it.
+6. Show the Favorites tab to confirm persistence.
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Framework | React Native 0.78 (CLI), TypeScript |
-| State management | Zustand 5 |
-| Remote persistence | Firebase Firestore |
-| Local persistence | `@react-native-async-storage/async-storage` |
-| Recipe API | Spoonacular `complexSearch` endpoint |
 | Navigation | React Navigation 7 (Stack + Bottom Tabs) |
-| Icons | `react-native-vector-icons` (Ionicons) |
-| Theme | React Context (`ThemeProvider` + `useAppTheme` hook) |
+| State Management | Zustand 5 |
+| Recipe API | Spoonacular (`complexSearch`, recipe information, ingredient search) |
+| Remote Persistence | Firebase Firestore |
+| Local Persistence | @react-native-async-storage/async-storage |
+| Icons | react-native-vector-icons |
+| Theming | React Context + custom theme palette |
 
----
+## Architecture Overview
 
-## Architecture
-
-```
-Presentation Layer (screens / components)
-        │  useAppTheme()       makeStyles(colors)
-        ▼
-  ThemeContext  ◄── useSettingsStore (darkMode)
-        │
-        ▼
-  Zustand Stores
-  ┌─────────────────┐  ┌──────────────────┐  ┌───────────────────┐
-  │  recipeStore    │  │  favoritesStore  │  │  settingsStore    │
-  │  (search state) │  │  (Firestore)     │  │  (AsyncStorage)   │
-  └────────┬────────┘  └──────────────────┘  └───────────────────┘
-           │
-           ▼
-     Service Layer
-  ┌─────────────────────┐   ┌──────────────────┐
-  │  spoonacularApi.ts  │   │  firebaseClient  │
-  │  complexSearch +    │   │  (Firestore CRUD) │
-  │  diet/exclude params│   └──────────────────┘
-  └─────────────────────┘
+```text
+UI Screens/Components
+   -> ThemeContext (useAppTheme)
+   -> Zustand Stores (recipe, settings, favorites)
+   -> Service Layer (spoonacularApi, firebaseClient)
+   -> External APIs (Spoonacular, Firestore)
 ```
 
-### Key design decisions
+### Key Design Decisions
 
-- **`useAppTheme` + `makeStyles(colors)`** — every component calls `useAppTheme()` to get the active colour palette, then passes it into a `makeStyles` factory that returns a `StyleSheet`. This means zero hardcoded colours anywhere in the component tree.
-- **Settings are read via `getState()`** inside async store actions (not as hooks) to avoid hook rules violations when `searchRecipes` reads `settingsStore`.
-- **Halal filter** is approximated by excluding `pork, bacon, ham, lard, gelatin, alcohol, wine, beer` from the Spoonacular query.
-- **Firestore favourites** are toggled atomically — add if not present, delete if present — keyed by Spoonacular recipe ID.
+1. Theme-first styling
+- Screens use useAppTheme and style factories to avoid hardcoded color values.
 
----
+2. Store-driven async logic
+- Async recipe actions read settings from store getState to stay hook-safe.
 
-## Folder Structure
+3. Service separation
+- API logic is isolated in service files to keep UI code simple and testable.
 
-```
+4. Graceful degradation
+- Ingredient search has fallback behavior if API constraints occur.
+
+## Project Structure
+
+```text
 Chefy_ai/
-├── android/                    # Android native project
-├── src/
-│   ├── config/                 # Environment variables (API keys, Firebase config)
-│   ├── core/
-│   │   ├── components/         # Shared UI components
-│   │   │   └── PrimaryButton.tsx
-│   │   └── theme/
-│   │       ├── colors.ts       # COLORS (light) + DARK_COLORS (dark) + Colors type
-│   │       ├── ThemeContext.tsx # ThemeProvider + useAppTheme hook
-│   │       └── index.ts        # Barrel export
-│   ├── features/               # Feature-sliced modules
-│   │   ├── ingredients/
-│   │   │   ├── components/     # IngredientChip, IngredientSelector
-│   │   │   └── screens/        # HomeScreen (ingredient picker)
-│   │   ├── recipes/
-│   │   │   ├── components/     # RecipeCard, RecipeList
-│   │   │   └── screens/        # RecipeResultsScreen, RecipeDetailScreen
-│   │   ├── favorites/
-│   │   │   └── screens/        # FavoritesScreen
-│   │   └── settings/
-│   │       └── screens/        # SettingsScreen (dietary filters + dark mode)
-│   ├── navigation/
-│   │   ├── AppNavigator.tsx    # Root stack navigator
-│   │   └── TabNavigator.tsx    # Bottom tab navigator (Home / Favourites / Settings)
-│   ├── services/
-│   │   ├── api/
-│   │   │   └── spoonacularApi.ts   # Spoonacular complexSearch integration
-│   │   └── firebase/
-│   │       └── firebaseClient.ts   # Firebase app initialisation
-│   ├── store/
-│   │   ├── recipeStore.ts      # Recipe search state (Zustand)
-│   │   ├── favoritesStore.ts   # Favourites state → Firestore
-│   │   └── settingsStore.ts    # Dietary prefs + dark mode → AsyncStorage
-│   └── types/
-│       └── index.ts            # Shared TypeScript interfaces & navigation types
-├── App.tsx                     # Entry point — ThemeProvider + loadSettings
-├── app.json
-├── babel.config.js
-├── metro.config.js
-├── tsconfig.json
-└── package.json
+|- android/
+|- src/
+|  |- config/
+|  |- core/
+|  |  |- components/
+|  |  \- theme/
+|  |- features/
+|  |  |- ingredients/
+|  |  |- recipes/
+|  |  |- favorites/
+|  |  \- settings/
+|  |- navigation/
+|  |- services/
+|  |  |- api/
+|  |  \- firebase/
+|  |- store/
+|  \- types/
+|- App.tsx
+|- package.json
+\- README.md
 ```
 
----
-
-## Setup & Running
+## Setup
 
 ### Prerequisites
 
-- Node.js ≥ 18
-- Java 17 (JDK)
-- Android Studio with an AVD (emulator) or a physical Android device with USB debugging enabled
-- A Spoonacular API key → [spoonacular.com/food-api](https://spoonacular.com/food-api)
-- A Firebase project with Firestore enabled
+- Node.js 18+
+- Java 17
+- Android Studio with emulator (or Android device)
+- Spoonacular API key
+- Firebase project with Firestore enabled
 
-### 1. Install dependencies
+### 1) Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Add environment config
+### 2) Configure environment
 
-Create `src/config/env.ts`:
+Create src/config/env.ts:
 
 ```ts
 export const SPOONACULAR_API_KEY = 'your_key_here';
 ```
 
-Add your `google-services.json` (from Firebase console) to `android/app/`.
+Place google-services.json in android/app/.
 
-### 3. Run the app
+### 3) Run the app
 
 ```bash
-# Start Metro bundler
+# Terminal 1: Metro
 npm start
 
-# In a second terminal, build & launch on Android
+# Terminal 2: Android build + launch
 npm run android
 ```
 
-> **First run after cloning**: always use `npm run android` (full native build) rather than just reloading Metro, because native modules (`AsyncStorage`, Firebase) must be compiled.
-
----
+For first run after clone, always run npm run android to compile native modules.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---|---|
-| PowerShell script disabled error | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` as Admin |
-| `VIBRATE` permission crash on Android | Ensure `<uses-permission android:name="android.permission.VIBRATE" />` is in `android/app/src/main/AndroidManifest.xml` |
-| White screen / context undefined | Make sure `<ThemeProvider>` wraps the entire app in `App.tsx` |
-| Metro cache issues | Run `npm start -- --reset-cache` |
-| Emulator not detected | Start an AVD in Android Studio before running `npm run android` |
+| PowerShell script policy issue | Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass |
+| Metro cache issue | npm start -- --reset-cache |
+| Emulator not detected | Start AVD first, then run npm run android |
+| Ingredient API lookup fails | App falls back to local ingredient list |
+| White screen/theme context issue | Ensure ThemeProvider wraps the app root |
+
+## Mini Project Scope Notes
+
+- Authentication screens exist but are not the main focus.
+- Start Cooking button is intentionally disabled.
+- Core scope: ingredient selection, recipe discovery, dietary filters, favorites, and presentation-ready UI.
+
+## Credits
+
+- Recipe data: Spoonacular API
+- Persistence: Firebase Firestore
 

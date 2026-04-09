@@ -1,16 +1,17 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Animated,
-    Image,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Animated,
+  Image,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -31,7 +32,8 @@ const RecipeDetailScreen = ({ navigation, route }: Props) => {
 
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const { colors, isDark } = useAppTheme();
-  const s = makeStyles(colors);
+  const topInset = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
+  const s = makeStyles(colors, topInset);
   const bookmarkScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -111,6 +113,26 @@ const RecipeDetailScreen = ({ navigation, route }: Props) => {
   return (
     <View style={s.screen}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
+      <View style={s.topActions}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={s.iconButton}
+        >
+          <Ionicons color={colors.text} name="chevron-back" size={24} />
+        </Pressable>
+
+        <Animated.View style={{ transform: [{ scale: bookmarkScale }] }}>
+          <Pressable onPress={handleBookmarkToggle} style={s.iconButton}>
+            <Ionicons
+              color={bookmarked ? colors.primary : colors.text}
+              name={bookmarked ? 'heart' : 'heart-outline'}
+              size={24}
+            />
+          </Pressable>
+        </Animated.View>
+      </View>
+
       <ScrollView
         contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -118,25 +140,6 @@ const RecipeDetailScreen = ({ navigation, route }: Props) => {
         <View style={s.heroContainer}>
           <Image source={{ uri: recipe.image }} style={s.heroImage} />
           <View style={s.overlay} />
-
-          <SafeAreaView style={s.heroActions}>
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={s.iconButton}
-            >
-              <Ionicons color={colors.text} name="chevron-back" size={24} />
-            </Pressable>
-
-            <Animated.View style={{ transform: [{ scale: bookmarkScale }] }}>
-              <Pressable onPress={handleBookmarkToggle} style={s.iconButton}>
-                <Ionicons
-                  color={bookmarked ? colors.primary : colors.text}
-                  name={bookmarked ? 'heart' : 'heart-outline'}
-                  size={24}
-                />
-              </Pressable>
-            </Animated.View>
-          </SafeAreaView>
         </View>
 
         <View style={s.contentSection}>
@@ -221,13 +224,13 @@ const RecipeDetailScreen = ({ navigation, route }: Props) => {
       </ScrollView>
 
       <View style={s.footer}>
-        <PrimaryButton title="Start Cooking" onPress={() => {}} />
+        <PrimaryButton title="Start Cooking" onPress={() => {}} disabled />
       </View>
     </View>
   );
 };
 
-const makeStyles = (colors: Colors) =>
+const makeStyles = (colors: Colors, topInset: number) =>
   StyleSheet.create({
     screen: {
       flex: 1,
@@ -260,15 +263,17 @@ const makeStyles = (colors: Colors) =>
       ...StyleSheet.absoluteFillObject,
       backgroundColor: 'rgba(0,0,0,0.1)',
     },
-    heroActions: {
+    topActions: {
       position: 'absolute',
       top: 0,
       left: 0,
       right: 0,
+      zIndex: 20,
+      elevation: 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingHorizontal: 20,
-      paddingTop: 10,
+      paddingTop: topInset + 10,
     },
     iconButton: {
       width: 44,
@@ -277,11 +282,6 @@ const makeStyles = (colors: Colors) =>
       backgroundColor: colors.white,
       alignItems: 'center',
       justifyContent: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
     },
     contentSection: {
       backgroundColor: colors.background,

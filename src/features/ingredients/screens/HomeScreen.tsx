@@ -1,7 +1,7 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     Platform,
     SafeAreaView,
@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { PrimaryButton } from '../../../core/components';
 import { Colors, useAppTheme } from '../../../core/theme';
 import { INGREDIENT_LIST } from '../../../services/api/mockData';
+import { searchIngredients } from '../../../services/api/spoonacularApi';
 import { RootStackParamList, TabParamList } from '../../../types';
 import IngredientSelector from '../components/IngredientSelector';
 
@@ -34,14 +35,69 @@ const HomeScreen = ({ navigation }: Props) => {
   const s = makeStyles(colors);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [availableIngredients, setAvailableIngredients] = useState<string[]>([]);
+  const [loadingIngredients, setLoadingIngredients] = useState(false);
+  const [ingredientsError, setIngredientsError] = useState<string | null>(null);
 
-  const filteredIngredients = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) {
-      return INGREDIENT_LIST;
-    }
-    return INGREDIENT_LIST.filter(name => name.toLowerCase().includes(q));
+  useEffect(() => {
+    let isCancelled = false;
+
+    const timeoutId = setTimeout(async () => {
+      const trimmedQuery = searchQuery.trim();
+
+      if (trimmedQuery.length === 0) {
+        if (!isCancelled) {
+          setIngredientsError(null);
+          setLoadingIngredients(false);
+          setAvailableIngredients(INGREDIENT_LIST);
+        }
+        return;
+      }
+
+      try {
+        setLoadingIngredients(true);
+        setIngredientsError(null);
+        const results = await searchIngredients(trimmedQuery);
+        if (!isCancelled) {
+          setAvailableIngredients(results);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          const message = err instanceof Error ? err.message : 'Failed to fetch ingredients.';
+          setIngredientsError(message);
+          setAvailableIngredients(
+            INGREDIENT_LIST.filter(name =>
+              name.toLowerCase().includes(trimmedQuery.toLowerCase()),
+            ),
+          );
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoadingIngredients(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [searchQuery]);
+
+  const helperText = useMemo(() => {
+    if (loadingIngredients) {
+      return 'Loading ingredients...';
+    }
+    if (ingredientsError) {
+      return 'API limited/unavailable. Showing local ingredient list.';
+    }
+    if (availableIngredients.length === 0) {
+      return searchQuery.trim()
+        ? 'No ingredient matched your search.'
+        : 'Select 2-5 ingredients';
+    }
+    return 'Select 2-5 ingredients';
+  }, [availableIngredients.length, ingredientsError, loadingIngredients, searchQuery]);
 
   const isFindRecipesDisabled = useMemo(
     () => selectedIngredients.length < 2,
@@ -93,11 +149,11 @@ const HomeScreen = ({ navigation }: Props) => {
         <View style={s.content}>
           <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>Select Ingredients</Text>
-            <Text style={s.sectionSubtitle}>Select 2–5 ingredients</Text>
+            <Text style={s.sectionSubtitle}>{helperText}</Text>
           </View>
 
           <IngredientSelector
-            ingredients={filteredIngredients}
+            ingredients={availableIngredients}
             maxSelection={5}
             onSelectionChange={setSelectedIngredients}
           />

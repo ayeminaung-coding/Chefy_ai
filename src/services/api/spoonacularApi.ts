@@ -11,6 +11,44 @@ export interface SearchOptions {
 }
 
 /**
+ * Search ingredient names for autosuggest in the ingredient picker screen.
+ */
+export const searchIngredients = async (
+  query: string,
+  number = 30,
+): Promise<string[]> => {
+  const trimmedQuery = query.trim();
+  if (trimmedQuery.length === 0) {
+    return [];
+  }
+
+  const params = new URLSearchParams({
+    number: String(number),
+    apiKey: SPOONACULAR_API_KEY,
+    query: trimmedQuery,
+  });
+
+  const url = `${BASE_URL}/food/ingredients/search?${params.toString()}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Spoonacular ingredient search failed (${response.status}): ${text}`);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: { results?: any[] } = await response.json();
+
+  return Array.from(
+    new Set(
+      (data.results ?? [])
+        .map(item => (item?.name as string | undefined)?.trim())
+        .filter((name): name is string => Boolean(name)),
+    ),
+  );
+};
+
+/**
  * Search recipes by ingredients using complexSearch, which supports
  * dietary filters (diet, excludeIngredients) not available on findByIngredients.
  */
