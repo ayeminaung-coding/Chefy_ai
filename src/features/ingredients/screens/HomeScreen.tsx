@@ -99,6 +99,20 @@ const HomeScreen = ({ navigation }: Props) => {
     return 'Select 2-5 ingredients';
   }, [availableIngredients.length, ingredientsError, loadingIngredients, searchQuery]);
 
+  const displayedIngredients = useMemo(() => {
+    const uniqueNames = new Set<string>();
+    const merged = [...selectedIngredients, ...availableIngredients];
+
+    return merged.filter((name) => {
+      const key = name.toLowerCase();
+      if (uniqueNames.has(key)) {
+        return false;
+      }
+      uniqueNames.add(key);
+      return true;
+    });
+  }, [availableIngredients, selectedIngredients]);
+
   const isFindRecipesDisabled = useMemo(
     () => selectedIngredients.length < 2,
     [selectedIngredients.length],
@@ -153,9 +167,10 @@ const HomeScreen = ({ navigation }: Props) => {
           </View>
 
           <IngredientSelector
-            ingredients={availableIngredients}
+            ingredients={displayedIngredients}
             maxSelection={5}
             onSelectionChange={setSelectedIngredients}
+            initialSelection={selectedIngredients}
           />
         </View>
       </ScrollView>

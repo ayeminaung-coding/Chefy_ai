@@ -58,23 +58,24 @@ const IngredientSelector = ({
   );
 
   const sanitizedInitialSelection = useMemo(() => {
-    const allowed = new Set(ingredientList);
-    return initialItems
-      .filter(name => allowed.has(name))
-      .slice(0, maxSelection);
-  }, [ingredientList, initialItems, maxSelection]);
+    return initialItems.slice(0, maxSelection);
+  }, [initialItems, maxSelection]);
 
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>(
     sanitizedInitialSelection,
   );
 
   useEffect(() => {
+    if (!Array.isArray(initialSelection)) {
+      return;
+    }
+
     setSelectedIngredients(prev =>
       areArraysEqual(prev, sanitizedInitialSelection)
         ? prev
         : sanitizedInitialSelection,
     );
-  }, [sanitizedInitialSelection]);
+  }, [initialSelection, sanitizedInitialSelection]);
 
   useEffect(() => {
     onSelectionChange(selectedIngredients);
