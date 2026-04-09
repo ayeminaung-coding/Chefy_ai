@@ -20,6 +20,7 @@ interface RecipeListProps {
   ListHeaderComponent?: React.ComponentType | React.ReactElement | null;
   onBookmark?: (recipe: RecipeItem) => void;
   getIsBookmarked?: (id: number) => boolean;
+  onRefresh?: () => Promise<void> | void;
 }
 
 const RecipeList = ({
@@ -29,17 +30,24 @@ const RecipeList = ({
   ListHeaderComponent,
   onBookmark,
   getIsBookmarked,
+  onRefresh,
 }: RecipeListProps) => {
   const { colors } = useAppTheme();
   const s = makeStyles(colors);
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = useCallback(async () => {
+    if (!onRefresh) {
+      return;
+    }
+
     setRefreshing(true);
-    setTimeout(() => {
+    try {
+      await onRefresh();
+    } finally {
       setRefreshing(false);
-    }, 1000);
-  }, []);
+    }
+  }, [onRefresh]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<RecipeItem>) => (
@@ -79,12 +87,14 @@ const RecipeList = ({
         ListEmptyComponent={renderEmpty}
         ListHeaderComponent={ListHeaderComponent ?? null}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
-          />
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={[colors.primary]}
+              tintColor={colors.primary}
+            />
+          ) : undefined
         }
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}

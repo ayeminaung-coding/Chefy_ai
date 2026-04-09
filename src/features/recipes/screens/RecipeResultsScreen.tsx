@@ -26,12 +26,16 @@ const RecipeResultsScreen = ({ route, navigation }: Props) => {
   const { recipes, loading, error, searchRecipes } = useRecipeStore();
   const { isFavorite, toggleFavorite } = useFavoritesStore();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (ingredients.length > 0) {
       searchRecipes(ingredients);
     }
-  }, []); // intentionally runs once on mount
+  }, [ingredients, searchRecipes]);
+
+  const handleRefresh = useCallback(
+    () => searchRecipes(ingredients),
+    [ingredients, searchRecipes],
+  );
 
   const handleRecipePress = useCallback(
     (id: number) => navigation.navigate('RecipeDetail', { recipeId: id }),
@@ -81,6 +85,7 @@ const RecipeResultsScreen = ({ route, navigation }: Props) => {
           onRecipePress={handleRecipePress}
           onBookmark={toggleFavorite}
           getIsBookmarked={isFavorite}
+          onRefresh={handleRefresh}
           emptyMessage="We couldn't find any recipes with those ingredients. Try adding more!"
         />
       )}

@@ -34,6 +34,7 @@ const SignUpScreen = ({ navigation }: Props) => {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [confirmFocused, setConfirmFocused] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const { signUp, googleSignIn, loading, error, clearError } = useAuthStore();
 
@@ -50,8 +51,11 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   useEffect(() => {
     if (error) { clearError(); }
+    if (localError) { setLocalError(null); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, password, confirm]);
+
+  const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const passwordMatch = password === confirm;
   const isValid =
@@ -60,6 +64,28 @@ const SignUpScreen = ({ navigation }: Props) => {
     passwordMatch;
 
   const handleSignUp = async () => {
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !password || !confirm) {
+      setLocalError('Please complete all fields.');
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setLocalError('Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setLocalError('Password must be at least 6 characters.');
+      return;
+    }
+
+    if (!passwordMatch) {
+      setLocalError('Passwords do not match.');
+      return;
+    }
+
     if (!isValid) { return; }
     await signUp(email.trim(), password);
   };
@@ -191,10 +217,10 @@ const SignUpScreen = ({ navigation }: Props) => {
             )}
 
             {/* Firebase Error */}
-            {error ? (
+            {localError || error ? (
               <View style={s.errorBox}>
                 <Ionicons name="alert-circle" size={16} color={colors.error} />
-                <Text style={s.errorText}>{error}</Text>
+                <Text style={s.errorText}>{localError ?? error}</Text>
               </View>
             ) : null}
 

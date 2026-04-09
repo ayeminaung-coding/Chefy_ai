@@ -43,6 +43,7 @@ const FavoritesScreen = ({ navigation }: Props) => {
         onRecipePress={id => navigation.navigate('RecipeDetail', { recipeId: id })}
         onBookmark={toggleFavorite}
         getIsBookmarked={isFavorite}
+        onRefresh={loadFavorites}
         emptyMessage="Start exploring and bookmark your favorite recipes!"
       />
     </View>

@@ -31,6 +31,7 @@ const LoginScreen = ({ navigation }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const { login, googleSignIn, loading, error, clearError } = useAuthStore();
 
@@ -48,11 +49,30 @@ const LoginScreen = ({ navigation }: Props) => {
   // Clear error when inputs change
   useEffect(() => {
     if (error) { clearError(); }
+    if (localError) { setLocalError(null); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, password]);
 
+  const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
   const handleLogin = async () => {
-    if (!email.trim() || !password) { return; }
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !password) {
+      setLocalError('Please fill in both email and password.');
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setLocalError('Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setLocalError('Password must be at least 6 characters.');
+      return;
+    }
+
     await login(email.trim(), password);
   };
 
@@ -137,10 +157,10 @@ const LoginScreen = ({ navigation }: Props) => {
             </View>
 
             {/* Error */}
-            {error ? (
+            {localError || error ? (
               <View style={s.errorBox}>
                 <Ionicons name="alert-circle" size={16} color={colors.error} />
-                <Text style={s.errorText}>{error}</Text>
+                <Text style={s.errorText}>{localError ?? error}</Text>
               </View>
             ) : null}
 
