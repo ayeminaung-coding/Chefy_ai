@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // Packages that contain ES module syntax or JSX and must be transpiled even
 // though they live in node_modules.
@@ -152,6 +153,20 @@ module.exports = (env, argv) => {
     },
 
     plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, '..', 'src', 'assets', 'screens'),
+            to: 'deck-assets/screens',
+            noErrorOnMissing: true,
+          },
+          {
+            from: path.resolve(__dirname, '..', 'src', 'assets', 'images'),
+            to: 'deck-assets/images',
+            noErrorOnMissing: true,
+          },
+        ],
+      }),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'index.html'),
         filename: 'index.html',
@@ -164,6 +179,11 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'delete-data.html'),
         filename: 'delete-data.html',
+        inject: false,
+      }),
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'landingpage.html'),
+        filename: 'landingpage.html',
         inject: false,
       }),
       new webpack.DefinePlugin({

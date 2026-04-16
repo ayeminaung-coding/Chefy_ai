@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FF6B6B" />
+    <meta
+      name="description"
+      content="ChefyAI presentation deck: a modern mobile-app style landing page with real app screens, problem, solution, features, stack, and roadmap."
+    />
+    <title>ChefyAI | Mobile App Presentation Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --text: #1A1A1A;
+        --bg: #F8F9FA;
+        --brand: #FF6B6B;
+        --secondary: #FFD93D;
+        --accent: #4D96FF;
+        --surface: #FFFFFF;
+        --muted: #6C757D;
+        --success: #2ECC71;
+        --line: #E9ECEF;
+        --error: #FF4757;
+        --warning: #FFA502;
+        --disabled: #CED4DA;
+        --overlay: rgba(0, 0, 0, 0.4);
+        --brand-soft: rgba(255, 107, 107, 0.12);
+        --accent-soft: rgba(77, 150, 255, 0.14);
+        --shadow: 0 20px 52px rgba(255, 107, 107, 0.18);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Manrope", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 0% 0%, rgba(255, 107, 107, 0.16) 0%, transparent 30%),
+          radial-gradient(circle at 95% 2%, rgba(77, 150, 255, 0.16) 0%, transparent 32%),
+          radial-gradient(circle at 60% 100%, rgba(255, 217, 61, 0.2) 0%, transparent 34%),
+          var(--bg);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      .deck {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 18px 16px 64px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: 0 8px 20px rgba(77, 150, 255, 0.18);
+      }
+
+      .brand-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .brand-name {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .pill-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .pill-link {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .hero {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        padding: 28px 22px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--brand);
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--brand-soft);
+        border: 1px solid rgba(255, 107, 107, 0.24);
+      }
+
+      h1 {
+        font-size: clamp(34px, 7.8vw, 64px);
+        line-height: 0.96;
+        letter-spacing: -0.03em;
+      }
+
+      .hero p {
+        margin: 14px 0 0;
+        color: var(--muted);
+        max-width: 640px;
+        font-size: 17px;
+      }
+
+      .hero-actions {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 11px 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        transition: transform 180ms ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-primary {
+        color: #fff;
+        background: var(--brand);
+      }
+
+      .btn-secondary {
+        background: #fff;
+        border-color: var(--line);
+      }
+
+      .phone {
+        background: #1F252D;
+        border-radius: 26px;
+        padding: 10px;
+        border: 1px solid #171B20;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+      }
+
+      .phone-top {
+        width: 38%;
+        height: 8px;
+        border-radius: 999px;
+        background: #4A5260;
+        margin: 0 auto 10px;
+      }
+
+      .phone-screen {
+        border-radius: 17px;
+        min-height: 280px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        padding: 12px;
+      }
+
+      .phone-screen.no-pad {
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .hero-phone-image {
+        width: 100%;
+        min-height: 280px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .content {
+        margin-top: 16px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 20px;
+      }
+
+      .card p {
+        color: var(--muted);
+        margin: 10px 0 0;
+      }
+
+      .split {
+        display: grid;
+        gap: 14px;
+      }
+
+      .problem {
+        border-left: 5px solid var(--warning);
+      }
+
+      .solution {
+        border-left: 5px solid var(--accent);
+      }
+
+      .feature-grid {
+        margin-top: 14px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .feature {
+        border: 1px dashed #D5DBE1;
+        border-radius: 14px;
+        padding: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .feature-icon {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: var(--accent-soft);
+        border: 1px solid rgba(77, 150, 255, 0.25);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .feature h3 {
+        font-size: 17px;
+      }
+
+      .feature p {
+        margin: 4px 0 0;
+        font-size: 14px;
+      }
+
+      .users {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .user-pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .screen-grid {
+        margin-top: 14px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .screen-photo {
+        width: 100%;
+        height: 330px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .screen-label {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+      }
+
+      .stack-row,
+      .benefits,
+      .future-list {
+        margin-top: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .stack-item,
+      .benefit-item,
+      .future-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+
+      .future-item strong {
+        color: var(--brand);
+      }
+
+      .closing {
+        text-align: center;
+        background: linear-gradient(145deg, var(--brand), #FF8E8E);
+        color: #fff;
+      }
+
+      .closing p {
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      .closing h2 {
+        font-size: clamp(28px, 6vw, 48px);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: rise 650ms ease forwards;
+      }
+
+      .delay-1 {
+        animation-delay: 80ms;
+      }
+
+      .delay-2 {
+        animation-delay: 170ms;
+      }
+
+      .delay-3 {
+        animation-delay: 260ms;
+      }
+
+      .delay-4 {
+        animation-delay: 340ms;
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (min-width: 860px) {
+        .hero {
+          grid-template-columns: 1.2fr 0.8fr;
+          align-items: center;
+        }
+
+        .split {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .feature-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .screen-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+
+      @media (min-width: 1140px) {
+        .screen-grid {
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck">
+      <header class="topbar reveal">
+        <div class="brand">
+          <div class="brand-logo">
+            <img src="/deck-assets/images/app-icon.png" alt="ChefyAI logo" />
+          </div>
+          <div class="brand-name">ChefyAI</div>
+        </div>
+        <nav class="pill-links">
+          <a class="pill-link" href="/">Live App</a>
+          <a class="pill-link" href="https://play.google.com/store/apps/details?id=com.chefyai" target="_blank" rel="noopener noreferrer">Play Store</a>
+          <a class="pill-link" href="/privacy">Privacy</a>
+        </nav>
+      </header>
+
+      <section class="hero reveal delay-1">
+        <div>
+          <span class="hero-eyebrow">Mobile App Presentation Deck</span>
+          <h1>ChefyAI</h1>
+          <p>
+            Decide what to cook in seconds. ChefyAI transforms your available ingredients into
+            practical recipe ideas with clear guidance from search to cooking.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/">Open Mobile Web Demo</a>
+            <a class="btn btn-secondary" href="#features">View Features</a>
+          </div>
+        </div>
+
+        <div class="phone">
+          <div class="phone-top"></div>
+          <div class="phone-screen no-pad">
+            <img class="hero-phone-image" src="/deck-assets/screens/home_screen.jpg" alt="ChefyAI home screen" />
+          </div>
+        </div>
+      </section>
+
+      <main class="content">
+        <section class="split reveal delay-2">
+          <article class="card problem">
+            <h2>Problem Users Face</h2>
+            <p>
+              People often waste time deciding what to cook, especially when they only have a few
+              random ingredients. Beginners feel stuck, busy users skip meals, and students default
+              to unhealthy quick options.
+            </p>
+          </article>
+
+          <article class="card solution">
+            <h2>ChefyAI Solution Overview</h2>
+            <p>
+              ChefyAI solves this by turning ingredients into curated recipes, guiding users step by
+              step, and keeping favorites in one place. It makes meal decisions faster and easier.
+            </p>
+          </article>
+        </section>
+
+        <section class="card reveal delay-2" id="features">
+          <h2>Key Features</h2>
+          <div class="feature-grid">
+            <article class="feature">
+              <div class="feature-icon">AI</div>
+              <div>
+                <h3>Smart Recipe Suggestions</h3>
+                <p>Quick recommendations based on available ingredients and user preferences.</p>
+              </div>
+            </article>
+            <article class="feature">
+              <div class="feature-icon">IB</div>
+              <div>
+                <h3>Ingredient-Based Recipe Search</h3>
+                <p>Search by what you already have at home to reduce waste and save money.</p>
+              </div>
+            </article>
+            <article class="feature">
+              <div class="feature-icon">SG</div>
+              <div>
+                <h3>Step-by-Step Cooking Guide</h3>
+                <p>Simple instructions from prep to serving for better confidence in the kitchen.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card reveal delay-3">
+          <h2>Target Users</h2>
+          <p>ChefyAI is designed for practical daily cooking and easy decision-making.</p>
+          <div class="users">
+            <span class="user-pill">Students</span>
+            <span class="user-pill">Beginners</span>
+            <span class="user-pill">Busy People</span>
+          </div>
+        </section>
+
+        <section class="card reveal delay-3">
+          <h2>App Screens Preview</h2>
+          <p>Real application screenshots for your presentation deck.</p>
+          <div class="screen-grid">
+            <div class="phone">
+              <div class="phone-top"></div>
+              <div class="phone-screen no-pad">
+                <img class="screen-photo" src="/deck-assets/screens/home_screen.jpg" alt="Home screen" />
+              </div>
+              <div class="screen-label">Home</div>
+            </div>
+            <div class="phone">
+              <div class="phone-top"></div>
+              <div class="phone-screen no-pad">
+                <img class="screen-photo" src="/deck-assets/screens/search_results_screen.jpg" alt="Search results screen" />
+              </div>
+              <div class="screen-label">Search Results</div>
+            </div>
+            <div class="phone">
+              <div class="phone-top"></div>
+              <div class="phone-screen no-pad">
+                <img class="screen-photo" src="/deck-assets/screens/reciep_details_screen.jpg" alt="Recipe detail screen" />
+              </div>
+              <div class="screen-label">Recipe Detail</div>
+            </div>
+            <div class="phone">
+              <div class="phone-top"></div>
+              <div class="phone-screen no-pad">
+                <img class="screen-photo" src="/deck-assets/screens/favourite_screen.jpg" alt="Favorites screen" />
+              </div>
+              <div class="screen-label">Favorites</div>
+            </div>
+            <div class="phone">
+              <div class="phone-top"></div>
+              <div class="phone-screen no-pad">
+                <img class="screen-photo" src="/deck-assets/screens/setting_screen.jpg" alt="Settings screen" />
+              </div>
+              <div class="screen-label">Settings</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="split reveal delay-4">
+          <article class="card">
+            <h2>Technology Stack</h2>
+            <div class="stack-row">
+              <div class="stack-item"><strong>React Native</strong> for cross-platform mobile UI.</div>
+              <div class="stack-item"><strong>Firebase</strong> for authentication and cloud database.</div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Benefits of Using ChefyAI</h2>
+            <div class="benefits">
+              <div class="benefit-item">Save time deciding meals.</div>
+              <div class="benefit-item">Reduce food waste by using existing ingredients.</div>
+              <div class="benefit-item">Improve cooking confidence with guided steps.</div>
+              <div class="benefit-item">Keep favorite recipes ready anytime.</div>
+            </div>
+          </article>
+        </section>
+
+        <section class="card reveal delay-4">
+          <h2>Future Improvements</h2>
+          <div class="future-list">
+            <div class="future-item"><strong>AI Recommendations:</strong> personalized suggestions from cooking history.</div>
+            <div class="future-item"><strong>Meal Planning:</strong> weekly plans and automated grocery lists.</div>
+            <div class="future-item"><strong>Voice Assistant:</strong> hands-free cooking instructions while preparing food.</div>
+          </div>
+        </section>
+
+        <section class="card closing reveal delay-4">
+          <h2>Thank You</h2>
+          <p>Questions and feedback are welcome.</p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

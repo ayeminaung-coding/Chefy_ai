@@ -27,6 +27,14 @@
         "destination": "/delete-data.html"
       },
       {
+        "source": "/landingpage",
+        "destination": "/landingpage.html"
+      },
+      {
+        "source": "/landingpage/**",
+        "destination": "/landingpage.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
