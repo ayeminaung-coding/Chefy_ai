@@ -1,18 +1,19 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Animated,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Animated,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -95,7 +96,11 @@ const LoginScreen = ({ navigation }: Props) => {
             style={[s.hero, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
           >
             <View style={s.logoWrap}>
-              <Text style={s.logoEmoji}>👨‍🍳</Text>
+              <Image
+                source={require('../../../assets/images/splash_logo.png')}
+                style={s.logoImage}
+                resizeMode="contain"
+              />
             </View>
             <Text style={s.heroTitle}>Welcome back</Text>
             <Text style={s.heroSub}>Sign in to your Chefyai account</Text>
@@ -234,7 +239,7 @@ const makeStyles = (colors: ReturnType<typeof import('../../../core/theme').useA
       justifyContent: 'center',
       marginBottom: 20,
     },
-    logoEmoji: { fontSize: 44 },
+    logoImage: { width: 60, height: 60 },
     heroTitle: { fontSize: 28, fontWeight: '800', color: colors.text, marginBottom: 6 },
     heroSub: { fontSize: 15, color: colors.textSecondary, fontWeight: '500' },
 

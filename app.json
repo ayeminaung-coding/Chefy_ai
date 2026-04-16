@@ -1,4 +1,13 @@
 {
     "name": "Chefyai",
-    "displayName": "Chefyai"
+    "displayName": "Chefyai",
+    "expo": {
+        "icon": "./src/assets/images/app-icon.png",
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./src/assets/images/app-icon-foreground.png",
+                "backgroundColor": "#FFFFFF"
+            }
+        }
+    }
 }

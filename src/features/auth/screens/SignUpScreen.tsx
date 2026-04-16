@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Animated,
+    Image,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -112,7 +113,11 @@ const SignUpScreen = ({ navigation }: Props) => {
             style={[s.hero, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
           >
             <View style={s.logoWrap}>
-              <Text style={s.logoEmoji}>🍳</Text>
+              <Image
+                source={require('../../../assets/images/splash_logo.png')}
+                style={s.logoImage}
+                resizeMode="contain"
+              />
             </View>
             <Text style={s.heroTitle}>Create account</Text>
             <Text style={s.heroSub}>Join Chefyai and start cooking smarter</Text>
@@ -311,7 +316,7 @@ const makeStyles = (colors: ReturnType<typeof import('../../../core/theme').useA
       justifyContent: 'center',
       marginBottom: 20,
     },
-    logoEmoji: { fontSize: 44 },
+    logoImage: { width: 60, height: 60 },
     heroTitle: { fontSize: 28, fontWeight: '800', color: colors.text, marginBottom: 6 },
     heroSub: { fontSize: 15, color: colors.textSecondary, fontWeight: '500', textAlign: 'center' },
 

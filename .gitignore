@@ -31,6 +31,8 @@ Thumbs.db
 *.jsbundle
 
 # Android
+*.keystore
+!debug.keystore
 android/.gradle/
 android/.kotlin/
 android/build/

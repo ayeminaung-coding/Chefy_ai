@@ -156,6 +156,16 @@ module.exports = (env, argv) => {
         template: path.resolve(__dirname, 'index.html'),
         filename: 'index.html',
       }),
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'privacy.html'),
+        filename: 'privacy.html',
+        inject: false,
+      }),
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'delete-data.html'),
+        filename: 'delete-data.html',
+        inject: false,
+      }),
       new webpack.DefinePlugin({
         __DEV__: isDev,
       }),
